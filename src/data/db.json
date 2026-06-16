@@ -143,6 +143,13 @@
       "contrasena": "alumno123",
       "rol": "alumno",
       "nombre": "Alumno 202300002"
+    },
+    { 
+      "id": "0512023029",
+      "codigo": "0512023029",
+      "contrasena": "alexis123",
+      "rol": "alumno",
+      "nombre": "Manuel Alexis Lachira Iman"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
