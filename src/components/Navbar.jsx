@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../auth/AuthContext';
 
 /**
  * Navbar — Barra de navegación superior
@@ -7,6 +8,7 @@ import { useState, useEffect } from 'react';
  */
 function Navbar({ onToggleSidebar }) {
   const [currentDate, setCurrentDate] = useState('');
+  const { user, logout } = useContext(AuthContext);
 
   // Actualizar fecha actual al montar el componente
   useEffect(() => {
@@ -28,11 +30,14 @@ function Navbar({ onToggleSidebar }) {
       </div>
       <div className="navbar-right">
         <div className="navbar-user">
-          <div className="navbar-avatar">AD</div>
+          <div className="navbar-avatar">{user ? user.nombre.substring(0, 2).toUpperCase() : 'U'}</div>
           <div className="navbar-user-info">
-            <span className="navbar-user-name">Administrador</span>
-            <span className="navbar-user-role">Soporte Técnico</span>
+            <span className="navbar-user-name">{user ? user.nombre : 'Usuario'}</span>
+            <span className="navbar-user-role" style={{ textTransform: 'capitalize' }}>{user ? user.rol : 'Rol'}</span>
           </div>
+          <button className="btn btn-outline btn-sm" style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={logout}>
+            Salir
+          </button>
         </div>
       </div>
     </header>

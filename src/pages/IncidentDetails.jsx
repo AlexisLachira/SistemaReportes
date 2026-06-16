@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getIncidentById, updateIncident, deleteIncident } from '../services/api';
+import { AuthContext } from '../auth/AuthContext';
 
 /**
  * IncidentDetails — Página de detalle completo de una incidencia
@@ -19,6 +20,8 @@ function IncidentDetails() {
   const [error, setError] = useState(null);
   // Estado: diálogo de confirmación
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const { user } = useContext(AuthContext);
 
   // Cargar incidencia al montar o cuando cambia el ID
   useEffect(() => {
@@ -113,9 +116,11 @@ function IncidentDetails() {
             <Link to={`/editar-incidencia/${incidencia.id}`} className="btn btn-sm btn-primary">
               ✏️ Editar
             </Link>
-            <button className="btn btn-sm btn-danger" onClick={() => setShowConfirm(true)}>
-              🗑️ Eliminar
-            </button>
+            {user && user.rol === 'administrador' && (
+              <button className="btn btn-sm btn-danger" onClick={() => setShowConfirm(true)}>
+                🗑️ Eliminar
+              </button>
+            )}
             <button className="btn btn-sm btn-outline" onClick={() => navigate('/incidencias')}>
               ← Volver
             </button>
@@ -162,29 +167,31 @@ function IncidentDetails() {
           </div>
 
           {/* Sección para cambiar estado */}
-          <div className="detail-status-section">
-            <h3 className="detail-status-title">Cambiar Estado de la Incidencia</h3>
-            <div className="status-buttons">
-              <button
-                className={`btn btn-sm ${incidencia.estado === 'Pendiente' ? 'btn-danger' : 'btn-outline'}`}
-                onClick={() => handleChangeEstado('Pendiente')}
-              >
-                ⏳ Pendiente
-              </button>
-              <button
-                className={`btn btn-sm ${incidencia.estado === 'En proceso' ? 'btn-primary' : 'btn-outline'}`}
-                onClick={() => handleChangeEstado('En proceso')}
-              >
-                🔧 En Proceso
-              </button>
-              <button
-                className={`btn btn-sm ${incidencia.estado === 'Resuelto' ? 'btn-success' : 'btn-outline'}`}
-                onClick={() => handleChangeEstado('Resuelto')}
-              >
-                ✅ Resuelto
-              </button>
+          {user && user.rol === 'administrador' && (
+            <div className="detail-status-section">
+              <h3 className="detail-status-title">Cambiar Estado de la Incidencia</h3>
+              <div className="status-buttons">
+                <button
+                  className={`btn btn-sm ${incidencia.estado === 'Pendiente' ? 'btn-danger' : 'btn-outline'}`}
+                  onClick={() => handleChangeEstado('Pendiente')}
+                >
+                  ⏳ Pendiente
+                </button>
+                <button
+                  className={`btn btn-sm ${incidencia.estado === 'En proceso' ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() => handleChangeEstado('En proceso')}
+                >
+                  🔧 En Proceso
+                </button>
+                <button
+                  className={`btn btn-sm ${incidencia.estado === 'Resuelto' ? 'btn-success' : 'btn-outline'}`}
+                  onClick={() => handleChangeEstado('Resuelto')}
+                >
+                  ✅ Resuelto
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

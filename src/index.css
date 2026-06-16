@@ -1225,3 +1225,26 @@ input, select, textarea {
     flex-direction: column;
   }
 }
+
+/* ---- Estilos de Login ---- */
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(var(--primary-light) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.login-container {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.login-header {
+  margin-bottom: 2rem;
+}

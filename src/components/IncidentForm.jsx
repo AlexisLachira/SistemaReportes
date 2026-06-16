@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createIncident, getIncidentById, updateIncident } from '../services/api';
+import { AuthContext } from '../auth/AuthContext';
 
 /**
  * IncidentForm — Formulario controlado para crear/editar incidencias
@@ -10,6 +11,8 @@ import { createIncident, getIncidentById, updateIncident } from '../services/api
 function IncidentForm({ editId = null }) {
   const navigate = useNavigate();
 
+  const { user } = useContext(AuthContext);
+
   // Estado del formulario con useState (formulario controlado)
   const [formData, setFormData] = useState({
     codigoEquipo: '',
@@ -17,7 +20,7 @@ function IncidentForm({ editId = null }) {
     laboratorio: '',
     descripcion: '',
     fecha: new Date().toISOString().split('T')[0],
-    reportante: '',
+    reportante: user && user.rol === 'alumno' ? user.nombre : '',
     prioridad: '',
     estado: 'Pendiente',
   });
@@ -104,7 +107,7 @@ function IncidentForm({ editId = null }) {
         setFormData({
           codigoEquipo: '', tipoEquipo: '', laboratorio: '',
           descripcion: '', fecha: new Date().toISOString().split('T')[0],
-          reportante: '', prioridad: '', estado: 'Pendiente',
+          reportante: user && user.rol === 'alumno' ? user.nombre : '', prioridad: '', estado: 'Pendiente',
         });
       }
       // Redirigir a la lista después de 1.5 segundos
@@ -226,6 +229,8 @@ function IncidentForm({ editId = null }) {
               onChange={handleChange}
               placeholder="Nombre completo"
               className={`form-input ${errors.reportante ? 'error' : ''}`}
+              readOnly={user && user.rol === 'alumno'}
+              style={user && user.rol === 'alumno' ? { backgroundColor: '#f5f5f5', color: '#888' } : {}}
             />
             {errors.reportante && <span className="form-error">{errors.reportante}</span>}
           </div>

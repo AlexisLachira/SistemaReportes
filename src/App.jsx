@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
@@ -7,19 +7,26 @@ import NewIncident from "./pages/NewIncident";
 import IncidentDetails from "./pages/IncidentDetails";
 import Reports from "./pages/Reports";
 import IncidentList from "./components/IncidentList";
+import Login from "./pages/Login";
+import { AuthProvider } from "./auth/AuthContext";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
+import { RoleProtectedRoute } from "./auth/RoleProtectedRoute";
 
-/**
- * App — Componente raíz de la aplicación
- * Define el layout principal (Sidebar + Navbar + Contenido)
- * y configura las rutas con React Router
- */
-function App() {
-  // Estado para controlar la visibilidad del sidebar en móvil
+function AppContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
 
-  // Función para alternar el sidebar en dispositivos móviles
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
+
+  // Si estamos en la página de login, no mostramos el layout
+  if (location.pathname === '/login') {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    );
+  }
 
   return (
     <div className="app-layout">
@@ -38,16 +45,28 @@ function App() {
 
         <main className="page-content">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/nueva-incidencia" element={<NewIncident />} />
-            <Route path="/incidencias" element={<IncidentList />} />
-            <Route path="/incidencias/:id" element={<IncidentDetails />} />
-            <Route path="/editar-incidencia/:id" element={<NewIncident />} />
-            <Route path="/reportes" element={<Reports />} />
+            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/nueva-incidencia" element={<ProtectedRoute><NewIncident /></ProtectedRoute>} />
+            <Route path="/incidencias" element={<ProtectedRoute><IncidentList /></ProtectedRoute>} />
+            <Route path="/incidencias/:id" element={<ProtectedRoute><IncidentDetails /></ProtectedRoute>} />
+            <Route path="/editar-incidencia/:id" element={<ProtectedRoute><NewIncident /></ProtectedRoute>} />
+            <Route path="/reportes" element={<RoleProtectedRoute rol="administrador"><Reports /></RoleProtectedRoute>} />
           </Routes>
         </main>
       </div>
     </div>
+  );
+}
+
+/**
+ * App — Componente raíz de la aplicación
+ * Configura el AuthProvider globalmente
+ */
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

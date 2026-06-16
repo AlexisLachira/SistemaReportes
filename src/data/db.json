@@ -122,5 +122,28 @@
       "id": "e8NzAx52d3w"
     }
   ],
+  "usuarios": [
+    {
+      "id": "admin",
+      "codigo": "admin",
+      "contrasena": "admin123",
+      "rol": "administrador",
+      "nombre": "Administrador"
+    },
+    {
+      "id": "202300001",
+      "codigo": "202300001",
+      "contrasena": "alumno123",
+      "rol": "alumno",
+      "nombre": "Alumno 202300001"
+    },
+    {
+      "id": "202300002",
+      "codigo": "202300002",
+      "contrasena": "alumno123",
+      "rol": "alumno",
+      "nombre": "Alumno 202300002"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

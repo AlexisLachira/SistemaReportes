@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from '../auth/AuthContext';
 
 /**
  * Sidebar — Menú lateral de navegación
@@ -7,13 +9,17 @@ import { NavLink } from 'react-router-dom';
  * @param {Function} onClose - Función para cerrar el sidebar
  */
 function Sidebar({ isOpen, onClose }) {
+  const { user } = useContext(AuthContext);
+
   // Definir los items del menú con sus rutas e iconos
   const menuItems = [
-    { path: '/', label: 'Dashboard', icon: '📊' },
-    { path: '/nueva-incidencia', label: 'Nueva Incidencia', icon: '➕' },
-    { path: '/incidencias', label: 'Incidencias', icon: '📋' },
-    { path: '/reportes', label: 'Reportes', icon: '📈' },
+    { path: '/', label: 'Dashboard', icon: '📊', roles: ['administrador', 'alumno'] },
+    { path: '/nueva-incidencia', label: 'Nueva Incidencia', icon: '➕', roles: ['administrador', 'alumno'] },
+    { path: '/incidencias', label: 'Incidencias', icon: '📋', roles: ['administrador', 'alumno'] },
+    { path: '/reportes', label: 'Reportes', icon: '📈', roles: ['administrador'] },
   ];
+
+  const visibleMenuItems = menuItems.filter(item => user && item.roles.includes(user.rol));
 
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
@@ -31,7 +37,7 @@ function Sidebar({ isOpen, onClose }) {
       {/* Navegación principal */}
       <nav className="sidebar-nav">
         <div className="sidebar-section-title">Menú Principal</div>
-        {menuItems.map((item) => (
+        {visibleMenuItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}

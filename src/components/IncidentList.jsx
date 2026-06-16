@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { getIncidents, deleteIncident, updateIncident } from '../services/api';
 import Filters from './Filters';
+import { AuthContext } from '../auth/AuthContext';
 
 /**
  * IncidentList — Tabla de incidencias con filtros, cambio de estado y eliminación
@@ -24,6 +25,8 @@ function IncidentList() {
   // Estado: diálogo de confirmación para eliminar
   const [confirmDelete, setConfirmDelete] = useState(null);
 
+  const { user } = useContext(AuthContext);
+
   // Cargar incidencias al montar el componente con useEffect
   useEffect(() => {
     fetchIncidencias();
@@ -34,8 +37,13 @@ function IncidentList() {
     setLoading(true);
     try {
       const data = await getIncidents();
-      setIncidencias(data);
-      setFiltradas(data);
+      // Filtrar incidencias según el rol del usuario
+      const dataRole = user.rol === 'administrador' 
+        ? data 
+        : data.filter(i => i.reportante === user.nombre || i.reportante === user.codigo);
+      
+      setIncidencias(dataRole);
+      setFiltradas(dataRole);
     } catch (error) {
       console.error('Error al cargar incidencias:', error);
     } finally {
@@ -164,31 +172,40 @@ function IncidentList() {
                       </span>
                     </td>
                     <td>
-                      <select
-                        value={incidencia.estado}
-                        onChange={(e) => handleChangeEstado(incidencia, e.target.value)}
-                        className={`badge ${getEstadoClass(incidencia.estado)}`}
-                        style={{ cursor: 'pointer', border: 'none', fontSize: '0.72rem', fontWeight: 600 }}
-                      >
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="En proceso">En proceso</option>
-                        <option value="Resuelto">Resuelto</option>
-                      </select>
+                      {user.rol === 'administrador' ? (
+                        <select
+                          value={incidencia.estado}
+                          onChange={(e) => handleChangeEstado(incidencia, e.target.value)}
+                          className={`badge ${getEstadoClass(incidencia.estado)}`}
+                          style={{ cursor: 'pointer', border: 'none', fontSize: '0.72rem', fontWeight: 600 }}
+                        >
+                          <option value="Pendiente">Pendiente</option>
+                          <option value="En proceso">En proceso</option>
+                          <option value="Resuelto">Resuelto</option>
+                        </select>
+                      ) : (
+                        <span className={`badge ${getEstadoClass(incidencia.estado)}`}>
+                          {incidencia.estado}
+                        </span>
+                      )}
                     </td>
                     <td>
                       <div className="table-actions">
                         <Link to={`/incidencias/${incidencia.id}`} className="btn btn-sm btn-outline">
                           👁️ Ver
                         </Link>
+                        {/* El alumno puede editar la suya, pero solo el admin puede eliminar */}
                         <Link to={`/editar-incidencia/${incidencia.id}`} className="btn btn-sm btn-primary">
                           ✏️
                         </Link>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => setConfirmDelete(incidencia.id)}
-                        >
-                          🗑️
-                        </button>
+                        {user.rol === 'administrador' && (
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => setConfirmDelete(incidencia.id)}
+                          >
+                            🗑️
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
