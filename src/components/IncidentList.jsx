@@ -38,10 +38,10 @@ function IncidentList() {
     try {
       const data = await getIncidents();
       // Filtrar incidencias según el rol del usuario
-      const dataRole = user.rol === 'administrador' 
-        ? data 
+      const dataRole = user.rol === 'administrador'
+        ? data
         : data.filter(i => i.reportante === user.nombre || i.reportante === user.codigo);
-      
+
       setIncidencias(dataRole);
       setFiltradas(dataRole);
     } catch (error) {
@@ -194,10 +194,12 @@ function IncidentList() {
                         <Link to={`/incidencias/${incidencia.id}`} className="btn btn-sm btn-outline">
                           👁️ Ver
                         </Link>
-                        {/* El alumno puede editar la suya, pero solo el admin puede eliminar */}
-                        <Link to={`/editar-incidencia/${incidencia.id}`} className="btn btn-sm btn-primary">
-                          ✏️
-                        </Link>
+                        {/* Solo el admin puede editar o eliminar */}
+                        {user.rol === 'administrador' && (
+                          <Link to={`/editar-incidencia/${incidencia.id}`} className="btn btn-sm btn-primary">
+                            ✏️
+                          </Link>
+                        )}
                         {user.rol === 'administrador' && (
                           <button
                             className="btn btn-sm btn-danger"

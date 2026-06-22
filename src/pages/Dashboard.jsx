@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { getIncidents } from '../services/api';
 import IncidentCard from '../components/IncidentCard';
 import Statistics from '../components/Statistics';
+import { AuthContext } from '../auth/AuthContext';
 
 /**
  * Dashboard — Página principal del sistema
@@ -14,12 +15,17 @@ function Dashboard() {
   // Estado: cargando datos
   const [loading, setLoading] = useState(true);
 
+  const { user } = useContext(AuthContext);
+
   // Cargar incidencias al montar el componente con useEffect y Fetch API
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getIncidents();
-        setIncidencias(data);
+        const dataRole = user.rol === 'administrador'
+          ? data
+          : data.filter(i => i.reportante === user.nombre || i.reportante === user.codigo);
+        setIncidencias(dataRole);
       } catch (error) {
         console.error('Error al cargar datos del dashboard:', error);
       } finally {
@@ -92,7 +98,9 @@ function Dashboard() {
       </div>
 
       {/* Sección de estadísticas con gráficos */}
-      <Statistics incidencias={incidencias} />
+      {user && user.rol === 'administrador' && (
+        <Statistics incidencias={incidencias} />
+      )}
 
       {/* Últimas incidencias */}
       <div className="recent-section">

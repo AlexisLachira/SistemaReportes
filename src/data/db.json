@@ -120,6 +120,17 @@
       "prioridad": "Media",
       "estado": "Pendiente",
       "id": "e8NzAx52d3w"
+    },
+    {
+      "codigoEquipo": "PC-L1-05",
+      "tipoEquipo": "Monitor",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "La pantalla tiene quemaduras de leds",
+      "fecha": "2026-06-22",
+      "reportante": "202300001",
+      "prioridad": "Alta",
+      "estado": "Resuelto",
+      "id": "WIBedfI2zx4"
     }
   ],
   "usuarios": [
@@ -145,8 +156,8 @@
       "nombre": "Alumno 202300002"
     },
     {
-      "id": "0512023029",
-      "codigo": "0512023029",
+      "id": "051202329",
+      "codigo": "051202329",
       "contrasena": "alexis123",
       "rol": "alumno",
       "nombre": "Manuel Alexis Lachira Iman"

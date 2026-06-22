@@ -113,9 +113,11 @@ function IncidentDetails() {
             </span>
           </div>
           <div className="detail-actions">
-            <Link to={`/editar-incidencia/${incidencia.id}`} className="btn btn-sm btn-primary">
-              ✏️ Editar
-            </Link>
+            {user && user.rol === 'administrador' && (
+              <Link to={`/editar-incidencia/${incidencia.id}`} className="btn btn-sm btn-primary">
+                ✏️ Editar
+              </Link>
+            )}
             {user && user.rol === 'administrador' && (
               <button className="btn btn-sm btn-danger" onClick={() => setShowConfirm(true)}>
                 🗑️ Eliminar

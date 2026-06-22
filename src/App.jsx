@@ -49,7 +49,7 @@ function AppContent() {
             <Route path="/nueva-incidencia" element={<ProtectedRoute><NewIncident /></ProtectedRoute>} />
             <Route path="/incidencias" element={<ProtectedRoute><IncidentList /></ProtectedRoute>} />
             <Route path="/incidencias/:id" element={<ProtectedRoute><IncidentDetails /></ProtectedRoute>} />
-            <Route path="/editar-incidencia/:id" element={<ProtectedRoute><NewIncident /></ProtectedRoute>} />
+            <Route path="/editar-incidencia/:id" element={<RoleProtectedRoute rol="administrador"><NewIncident /></RoleProtectedRoute>} />
             <Route path="/reportes" element={<RoleProtectedRoute rol="administrador"><Reports /></RoleProtectedRoute>} />
           </Routes>
         </main>

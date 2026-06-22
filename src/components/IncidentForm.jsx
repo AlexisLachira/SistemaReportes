@@ -20,7 +20,7 @@ function IncidentForm({ editId = null }) {
     laboratorio: '',
     descripcion: '',
     fecha: new Date().toISOString().split('T')[0],
-    reportante: user && user.rol === 'alumno' ? user.nombre : '',
+    reportante: user && user.rol === 'alumno' ? user.codigo : '',
     prioridad: '',
     estado: 'Pendiente',
   });
@@ -107,7 +107,7 @@ function IncidentForm({ editId = null }) {
         setFormData({
           codigoEquipo: '', tipoEquipo: '', laboratorio: '',
           descripcion: '', fecha: new Date().toISOString().split('T')[0],
-          reportante: user && user.rol === 'alumno' ? user.nombre : '', prioridad: '', estado: 'Pendiente',
+          reportante: user && user.rol === 'alumno' ? user.codigo : '', prioridad: '', estado: 'Pendiente',
         });
       }
       // Redirigir a la lista después de 1.5 segundos
