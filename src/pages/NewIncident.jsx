@@ -1,26 +1,23 @@
 import { useParams } from 'react-router-dom';
 import IncidentForm from '../components/IncidentForm';
 
-/**
- * NewIncident — Página para crear o editar una incidencia
- * Si la URL contiene un :id, el formulario entra en modo edición
- */
 function NewIncident() {
-  // Obtener ID de la URL (si existe) usando useParams
   const { id } = useParams();
 
   return (
     <div>
-      <div className="page-header">
-        <h1>{id ? '✏️ Editar Incidencia' : '➕ Nueva Incidencia'}</h1>
-        <p>
+      <div className="mb-4">
+        <h1 className="h3 fw-bold text-primary mb-1">
+          <i className={`bi ${id ? 'bi-pencil-square' : 'bi-plus-circle'} me-2`}></i> 
+          {id ? 'Editar Incidencia' : 'Nueva Incidencia'}
+        </h1>
+        <p className="text-muted mb-0">
           {id
             ? 'Modifique los datos de la incidencia seleccionada'
             : 'Complete el formulario para registrar una nueva incidencia de equipo dañado'}
         </p>
       </div>
 
-      {/* Componente del formulario — recibe editId si estamos editando */}
       <IncidentForm editId={id ? Number(id) : null} />
     </div>
   );

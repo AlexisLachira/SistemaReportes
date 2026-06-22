@@ -1,73 +1,47 @@
-/**
- * Statistics — Gráficos de barras CSS para visualizar distribución de incidencias
- * Muestra distribución por estado, laboratorio y prioridad
- * @param {Array} incidencias - Lista de incidencias para calcular estadísticas
- */
 function Statistics({ incidencias }) {
-  // Calcular distribución por estado
-  const porEstado = [
-    { label: 'Pendiente', count: incidencias.filter((i) => i.estado === 'Pendiente').length, fillClass: 'fill-danger' },
-    { label: 'En proceso', count: incidencias.filter((i) => i.estado === 'En proceso').length, fillClass: 'fill-warning' },
-    { label: 'Resuelto', count: incidencias.filter((i) => i.estado === 'Resuelto').length, fillClass: 'fill-success' },
-  ];
+  // Calculamos los porcentajes (simulado con barras de progreso Bootstrap)
+  const total = incidencias.length || 1; // evitar division por 0
+  const pendientes = incidencias.filter(i => i.estado === 'Pendiente').length;
+  const enProceso = incidencias.filter(i => i.estado === 'En proceso').length;
+  const resueltos = incidencias.filter(i => i.estado === 'Resuelto').length;
 
-  // Calcular distribución por laboratorio
-  const labs = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Administración'];
-  const porLaboratorio = labs.map((lab) => ({
-    label: lab.replace('Laboratorio ', 'Lab '),
-    count: incidencias.filter((i) => i.laboratorio === lab).length,
-    fillClass: 'fill-primary',
-  }));
-
-  // Calcular distribución por prioridad
-  const porPrioridad = [
-    { label: 'Alta', count: incidencias.filter((i) => i.prioridad === 'Alta').length, fillClass: 'fill-danger' },
-    { label: 'Media', count: incidencias.filter((i) => i.prioridad === 'Media').length, fillClass: 'fill-warning' },
-    { label: 'Baja', count: incidencias.filter((i) => i.prioridad === 'Baja').length, fillClass: 'fill-info' },
-  ];
-
-  // Función para renderizar un gráfico de barras
-  const renderBarChart = (data) => {
-    const total = incidencias.length;
-    if (total === 0) return <p style={{ color: '#6b7280', fontSize: '0.85rem' }}>Sin datos disponibles</p>;
-
-    return (
-      <div className="bar-chart">
-        {data.map((item) => (
-          <div key={item.label} className="bar-item">
-            <span className="bar-label">{item.label}</span>
-            <div className="bar-track">
-              <div
-                className={`bar-fill ${item.fillClass}`}
-                style={{ width: `${Math.max((item.count / total) * 100, 5)}%` }}
-              >
-                {item.count}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
+  const getPercent = (val) => Math.round((val / total) * 100);
 
   return (
-    <div className="stats-grid">
-      {/* Distribución por estado */}
-      <div className="stats-card">
-        <h3 className="stats-card-title">📊 Por Estado</h3>
-        {renderBarChart(porEstado)}
+    <div className="card border-0 shadow-sm mt-4">
+      <div className="card-header bg-white border-bottom-0 pt-3 pb-0">
+        <h5 className="mb-0 fw-bold"><i className="bi bi-pie-chart-fill me-2 text-primary"></i>Distribución de Estados</h5>
       </div>
+      <div className="card-body">
+        <div className="mb-3">
+          <div className="d-flex justify-content-between mb-1">
+            <span className="text-danger fw-semibold small">Pendientes ({pendientes})</span>
+            <span className="text-muted small">{getPercent(pendientes)}%</span>
+          </div>
+          <div className="progress" style={{ height: '8px' }}>
+            <div className="progress-bar bg-danger" role="progressbar" style={{ width: `${getPercent(pendientes)}%` }}></div>
+          </div>
+        </div>
+        
+        <div className="mb-3">
+          <div className="d-flex justify-content-between mb-1">
+            <span className="text-warning text-dark fw-semibold small">En Proceso ({enProceso})</span>
+            <span className="text-muted small">{getPercent(enProceso)}%</span>
+          </div>
+          <div className="progress" style={{ height: '8px' }}>
+            <div className="progress-bar bg-warning" role="progressbar" style={{ width: `${getPercent(enProceso)}%` }}></div>
+          </div>
+        </div>
 
-      {/* Distribución por laboratorio */}
-      <div className="stats-card">
-        <h3 className="stats-card-title">🏢 Por Laboratorio</h3>
-        {renderBarChart(porLaboratorio)}
-      </div>
-
-      {/* Distribución por prioridad */}
-      <div className="stats-card">
-        <h3 className="stats-card-title">🔔 Por Prioridad</h3>
-        {renderBarChart(porPrioridad)}
+        <div className="mb-3">
+          <div className="d-flex justify-content-between mb-1">
+            <span className="text-success fw-semibold small">Resueltos ({resueltos})</span>
+            <span className="text-muted small">{getPercent(resueltos)}%</span>
+          </div>
+          <div className="progress" style={{ height: '8px' }}>
+            <div className="progress-bar bg-success" role="progressbar" style={{ width: `${getPercent(resueltos)}%` }}></div>
+          </div>
+        </div>
       </div>
     </div>
   );

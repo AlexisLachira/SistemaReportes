@@ -4,44 +4,26 @@ import { getIncidents, deleteIncident, updateIncident } from '../services/api';
 import Filters from './Filters';
 import { AuthContext } from '../auth/AuthContext';
 
-/**
- * IncidentList — Tabla de incidencias con filtros, cambio de estado y eliminación
- * Usa useEffect para obtener datos con Fetch API desde JSON Server
- */
 function IncidentList() {
-  // Estado: lista de incidencias
   const [incidencias, setIncidencias] = useState([]);
-  // Estado: incidencias filtradas
   const [filtradas, setFiltradas] = useState([]);
-  // Estado: cargando
   const [loading, setLoading] = useState(true);
-  // Estado: filtros activos
-  const [filtros, setFiltros] = useState({
-    busqueda: '',
-    laboratorio: '',
-    prioridad: '',
-    estado: '',
-  });
-  // Estado: diálogo de confirmación para eliminar
+  const [filtros, setFiltros] = useState({ busqueda: '', laboratorio: '', prioridad: '', estado: '' });
   const [confirmDelete, setConfirmDelete] = useState(null);
-
+  
   const { user } = useContext(AuthContext);
 
-  // Cargar incidencias al montar el componente con useEffect
   useEffect(() => {
     fetchIncidencias();
   }, []);
 
-  // Obtener incidencias desde JSON Server
   const fetchIncidencias = async () => {
     setLoading(true);
     try {
       const data = await getIncidents();
-      // Filtrar incidencias según el rol del usuario
-      const dataRole = user.rol === 'administrador'
-        ? data
+      const dataRole = user.rol === 'administrador' 
+        ? data 
         : data.filter(i => i.reportante === user.nombre || i.reportante === user.codigo);
-
       setIncidencias(dataRole);
       setFiltradas(dataRole);
     } catch (error) {
@@ -51,191 +33,174 @@ function IncidentList() {
     }
   };
 
-  // Aplicar filtros cuando cambian los filtros o las incidencias
   useEffect(() => {
     let resultado = [...incidencias];
-
     if (filtros.busqueda) {
-      resultado = resultado.filter((i) =>
-        i.codigoEquipo.toLowerCase().includes(filtros.busqueda.toLowerCase())
-      );
+      resultado = resultado.filter(i => i.codigoEquipo.toLowerCase().includes(filtros.busqueda.toLowerCase()));
     }
-    if (filtros.laboratorio) {
-      resultado = resultado.filter((i) => i.laboratorio === filtros.laboratorio);
-    }
-    if (filtros.prioridad) {
-      resultado = resultado.filter((i) => i.prioridad === filtros.prioridad);
-    }
-    if (filtros.estado) {
-      resultado = resultado.filter((i) => i.estado === filtros.estado);
-    }
-
+    if (filtros.laboratorio) resultado = resultado.filter(i => i.laboratorio === filtros.laboratorio);
+    if (filtros.prioridad) resultado = resultado.filter(i => i.prioridad === filtros.prioridad);
+    if (filtros.estado) resultado = resultado.filter(i => i.estado === filtros.estado);
     setFiltradas(resultado);
   }, [filtros, incidencias]);
 
-  // Cambiar estado de una incidencia
   const handleChangeEstado = async (incidencia, nuevoEstado) => {
     try {
       await updateIncident(incidencia.id, { ...incidencia, estado: nuevoEstado });
-      setIncidencias(incidencias.map((i) =>
-        i.id === incidencia.id ? { ...i, estado: nuevoEstado } : i
-      ));
-    } catch (error) {
-      console.error('Error al cambiar estado:', error);
-    }
+      setIncidencias(incidencias.map(i => i.id === incidencia.id ? { ...i, estado: nuevoEstado } : i));
+    } catch (error) {}
   };
 
-  // Eliminar una incidencia
   const handleDelete = async (id) => {
     try {
       await deleteIncident(id);
-      setIncidencias(incidencias.filter((i) => i.id !== id));
+      setIncidencias(incidencias.filter(i => i.id !== id));
       setConfirmDelete(null);
-    } catch (error) {
-      console.error('Error al eliminar:', error);
+    } catch (error) {}
+  };
+
+  const getPrioridadBadge = (prioridad) => {
+    switch(prioridad) {
+      case 'Alta': return 'bg-danger';
+      case 'Media': return 'bg-warning text-dark';
+      case 'Baja': return 'bg-info text-dark';
+      default: return 'bg-secondary';
     }
   };
 
-  // Obtener clase CSS para el badge de prioridad
-  const getPrioridadClass = (prioridad) => {
-    const clases = { Alta: 'badge-alta', Media: 'badge-media', Baja: 'badge-baja' };
-    return clases[prioridad] || '';
+  const getEstadoBadge = (estado) => {
+    switch(estado) {
+      case 'Pendiente': return 'bg-danger';
+      case 'En proceso': return 'bg-warning text-dark';
+      case 'Resuelto': return 'bg-success';
+      default: return 'bg-secondary';
+    }
   };
 
-  // Obtener clase CSS para el badge de estado
-  const getEstadoClass = (estado) => {
-    const clases = { Pendiente: 'badge-pendiente', 'En proceso': 'badge-en-proceso', Resuelto: 'badge-resuelto' };
-    return clases[estado] || '';
-  };
-
-  // Renderizar loading
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <span className="loading-text">Cargando incidencias...</span>
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="page-header">
-        <h1>📋 Listado de Incidencias</h1>
-        <p>Gestiona y filtra todas las incidencias reportadas</p>
+      <div className="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h1 className="h3 fw-bold text-primary mb-1">
+            <i className="bi bi-card-list me-2"></i> Listado de Incidencias
+          </h1>
+          <p className="text-muted mb-0">Gestiona y filtra todas las incidencias reportadas</p>
+        </div>
+        <Link to="/nueva-incidencia" className="btn btn-primary shadow-sm">
+          <i className="bi bi-plus-lg me-1"></i> Nueva
+        </Link>
       </div>
 
-      <div className="table-section">
-        {/* Encabezado con título y conteo */}
-        <div className="table-header">
-          <span className="table-title">Incidencias Registradas</span>
-          <span className="table-count">{filtradas.length} de {incidencias.length}</span>
+      <Filters filtros={filtros} onFilterChange={setFiltros} />
+
+      <div className="card border-0 shadow-sm">
+        <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+          <h6 className="mb-0 fw-bold">Incidencias Registradas</h6>
+          <span className="badge bg-light text-secondary border">{filtradas.length} resultados</span>
         </div>
-
-        {/* Componente de filtros */}
-        <Filters filtros={filtros} onFilterChange={setFiltros} />
-
-        {/* Tabla de datos */}
-        <div className="table-container">
-          {filtradas.length === 0 ? (
-            <div className="empty-state">
-              <span className="empty-state-icon">🔍</span>
-              <span className="empty-state-text">
-                No se encontraron incidencias con los filtros aplicados
-              </span>
-            </div>
-          ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Código</th>
-                  <th>Tipo</th>
-                  <th>Laboratorio</th>
-                  <th>Fecha</th>
-                  <th>Prioridad</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtradas.map((incidencia) => (
-                  <tr key={incidencia.id}>
-                    <td>
-                      <span className="table-code">{incidencia.codigoEquipo}</span>
-                    </td>
-                    <td>{incidencia.tipoEquipo}</td>
-                    <td>{incidencia.laboratorio}</td>
-                    <td>{incidencia.fecha}</td>
-                    <td>
-                      <span className={`badge ${getPrioridadClass(incidencia.prioridad)}`}>
-                        {incidencia.prioridad}
-                      </span>
-                    </td>
-                    <td>
-                      {user.rol === 'administrador' ? (
-                        <select
-                          value={incidencia.estado}
-                          onChange={(e) => handleChangeEstado(incidencia, e.target.value)}
-                          className={`badge ${getEstadoClass(incidencia.estado)}`}
-                          style={{ cursor: 'pointer', border: 'none', fontSize: '0.72rem', fontWeight: 600 }}
-                        >
-                          <option value="Pendiente">Pendiente</option>
-                          <option value="En proceso">En proceso</option>
-                          <option value="Resuelto">Resuelto</option>
-                        </select>
-                      ) : (
-                        <span className={`badge ${getEstadoClass(incidencia.estado)}`}>
-                          {incidencia.estado}
-                        </span>
-                      )}
-                    </td>
-                    <td>
-                      <div className="table-actions">
-                        <Link to={`/incidencias/${incidencia.id}`} className="btn btn-sm btn-outline">
-                          👁️ Ver
-                        </Link>
-                        {/* Solo el admin puede editar o eliminar */}
-                        {user.rol === 'administrador' && (
-                          <Link to={`/editar-incidencia/${incidencia.id}`} className="btn btn-sm btn-primary">
-                            ✏️
-                          </Link>
-                        )}
-                        {user.rol === 'administrador' && (
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => setConfirmDelete(incidencia.id)}
-                          >
-                            🗑️
-                          </button>
-                        )}
-                      </div>
-                    </td>
+        
+        <div className="card-body p-0">
+          <div className="table-responsive">
+            {filtradas.length === 0 ? (
+              <div className="text-center p-5 text-muted">
+                <i className="bi bi-search fs-1 mb-3 d-block opacity-50"></i>
+                <p>No se encontraron incidencias con los filtros aplicados</p>
+              </div>
+            ) : (
+              <table className="table table-hover table-striped align-middle mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th className="px-3">Código</th>
+                    <th>Tipo</th>
+                    <th>Laboratorio</th>
+                    <th>Fecha</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                    <th className="text-end px-3">Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-
-      {/* Diálogo de confirmación para eliminar */}
-      {confirmDelete && (
-        <div className="confirm-overlay">
-          <div className="confirm-dialog">
-            <h3 className="confirm-title">⚠️ Confirmar Eliminación</h3>
-            <p className="confirm-message">
-              ¿Está seguro de que desea eliminar esta incidencia? Esta acción no se puede deshacer.
-            </p>
-            <div className="confirm-actions">
-              <button className="btn btn-outline" onClick={() => setConfirmDelete(null)}>
-                Cancelar
-              </button>
-              <button className="btn btn-danger" onClick={() => handleDelete(confirmDelete)}>
-                Eliminar
-              </button>
-            </div>
+                </thead>
+                <tbody>
+                  {filtradas.map(inc => (
+                    <tr key={inc.id}>
+                      <td className="px-3"><span className="fw-semibold text-primary">{inc.codigoEquipo}</span></td>
+                      <td>{inc.tipoEquipo}</td>
+                      <td>{inc.laboratorio}</td>
+                      <td>{inc.fecha}</td>
+                      <td><span className={`badge ${getPrioridadBadge(inc.prioridad)}`}>{inc.prioridad}</span></td>
+                      <td>
+                        {user.rol === 'administrador' ? (
+                          <select
+                            value={inc.estado}
+                            onChange={(e) => handleChangeEstado(inc, e.target.value)}
+                            className={`badge border-0 ${getEstadoBadge(inc.estado)} form-select-sm`}
+                            style={{ cursor: 'pointer', appearance: 'none' }}
+                          >
+                            <option value="Pendiente" className="bg-white text-dark">Pendiente</option>
+                            <option value="En proceso" className="bg-white text-dark">En proceso</option>
+                            <option value="Resuelto" className="bg-white text-dark">Resuelto</option>
+                          </select>
+                        ) : (
+                          <span className={`badge ${getEstadoBadge(inc.estado)}`}>{inc.estado}</span>
+                        )}
+                      </td>
+                      <td className="text-end px-3">
+                        <div className="btn-group">
+                          <Link to={`/incidencias/${inc.id}`} className="btn btn-sm btn-outline-secondary" title="Ver detalle">
+                            <i className="bi bi-eye"></i>
+                          </Link>
+                          {user.rol === 'administrador' && (
+                            <>
+                              <Link to={`/editar-incidencia/${inc.id}`} className="btn btn-sm btn-outline-primary" title="Editar">
+                                <i className="bi bi-pencil"></i>
+                              </Link>
+                              <button className="btn btn-sm btn-outline-danger" onClick={() => setConfirmDelete(inc.id)} title="Eliminar">
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
+      </div>
+
+      {/* Modal de Bootstrap (simulado) para confirmar borrado */}
+      {confirmDelete && (
+        <>
+          <div className="modal-backdrop fade show"></div>
+          <div className="modal d-block" tabIndex="-1">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content border-0 shadow">
+                <div className="modal-header bg-danger text-white border-bottom-0">
+                  <h5 className="modal-title"><i className="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación</h5>
+                  <button type="button" className="btn-close btn-close-white" onClick={() => setConfirmDelete(null)}></button>
+                </div>
+                <div className="modal-body">
+                  ¿Está seguro de que desea eliminar esta incidencia? Esta acción no se puede deshacer.
+                </div>
+                <div className="modal-footer border-top-0 bg-light">
+                  <button type="button" className="btn btn-secondary" onClick={() => setConfirmDelete(null)}>Cancelar</button>
+                  <button type="button" className="btn btn-danger" onClick={() => handleDelete(confirmDelete)}>Eliminar Definitivamente</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

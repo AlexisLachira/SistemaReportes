@@ -1,20 +1,14 @@
-/**
- * IncidentCard — Tarjeta de estadísticas reutilizable
- * Muestra un valor numérico con icono, etiqueta y color
- * @param {string} label - Texto descriptivo
- * @param {number} valor - Valor numérico a mostrar
- * @param {string} icon - Emoji del icono
- * @param {string} cardClass - Clase CSS para el color (card-total, card-pendiente, card-proceso, card-resuelto)
- */
-function IncidentCard({ label, valor, icon, cardClass }) {
+function IncidentCard({ label, valor, icon, bg, textDark }) {
   return (
-    <div className={`stat-card ${cardClass}`}>
-      <div className="stat-card-icon">
-        {icon}
-      </div>
-      <div className="stat-card-info">
-        <span className="stat-card-value">{valor}</span>
-        <span className="stat-card-label">{label}</span>
+    <div className={`card border-0 shadow-sm h-100 bg-${bg} ${textDark ? 'text-dark' : 'text-white'}`}>
+      <div className="card-body d-flex align-items-center">
+        <div className="flex-shrink-0 me-3">
+          <i className={`bi ${icon} fs-1 opacity-75`}></i>
+        </div>
+        <div>
+          <h6 className="card-title mb-0 opacity-75 text-uppercase fw-semibold" style={{ fontSize: '0.8rem' }}>{label}</h6>
+          <h2 className="mb-0 fw-bold">{valor}</h2>
+        </div>
       </div>
     </div>
   );

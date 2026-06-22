@@ -131,6 +131,17 @@
       "prioridad": "Alta",
       "estado": "Resuelto",
       "id": "WIBedfI2zx4"
+    },
+    {
+      "codigoEquipo": "PC-L3-42",
+      "tipoEquipo": "Mouse",
+      "laboratorio": "Laboratorio 3",
+      "descripcion": "Se lo robaron chamo",
+      "fecha": "2026-06-22",
+      "reportante": "202300001",
+      "prioridad": "Media",
+      "estado": "Pendiente",
+      "id": "eYhmNWAwh2c"
     }
   ],
   "usuarios": [

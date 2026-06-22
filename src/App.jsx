@@ -29,21 +29,13 @@ function AppContent() {
   }
 
   return (
-    <div className="app-layout">
-      {/* Overlay para cerrar sidebar en móvil */}
-      <div
-        className={`sidebar-overlay ${sidebarOpen ? "active" : ""}`}
-        onClick={closeSidebar}
-      />
-
-      {/* Barra lateral de navegación */}
+    <div className="d-flex vh-100 vw-100 overflow-hidden bg-light">
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
 
-      {/* Área principal */}
-      <div className="main-area">
+      <div className="d-flex flex-column flex-grow-1 overflow-auto">
         <Navbar onToggleSidebar={toggleSidebar} />
 
-        <main className="page-content">
+        <main className="container-fluid p-4">
           <Routes>
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/nueva-incidencia" element={<ProtectedRoute><NewIncident /></ProtectedRoute>} />
@@ -58,10 +50,6 @@ function AppContent() {
   );
 }
 
-/**
- * App — Componente raíz de la aplicación
- * Configura el AuthProvider globalmente
- */
 function App() {
   return (
     <AuthProvider>

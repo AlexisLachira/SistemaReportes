@@ -3,17 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { createIncident, getIncidentById, updateIncident } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
 
-/**
- * IncidentForm — Formulario controlado para crear/editar incidencias
- * Usa useState para cada campo y validaciones básicas
- * @param {number|null} editId - ID de incidencia a editar (null = crear nueva)
- */
 function IncidentForm({ editId = null }) {
   const navigate = useNavigate();
-
   const { user } = useContext(AuthContext);
 
-  // Estado del formulario con useState (formulario controlado)
   const [formData, setFormData] = useState({
     codigoEquipo: '',
     tipoEquipo: '',
@@ -25,70 +18,47 @@ function IncidentForm({ editId = null }) {
     estado: 'Pendiente',
   });
 
-  // Estado para errores de validación
   const [errors, setErrors] = useState({});
-
-  // Estado para mensajes de éxito/error
   const [message, setMessage] = useState({ type: '', text: '' });
-
-  // Estado de carga
   const [loading, setLoading] = useState(false);
 
-  // Opciones para los selects
   const tiposEquipo = ['PC', 'Monitor', 'Teclado', 'Mouse', 'Impresora', 'Proyector', 'Otro'];
   const laboratorios = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Administración'];
   const prioridades = ['Alta', 'Media', 'Baja'];
 
-  // Si hay editId, cargar datos existentes con useEffect
   useEffect(() => {
     if (editId) {
       setLoading(true);
       getIncidentById(editId)
         .then((data) => {
-          setFormData({
-            codigoEquipo: data.codigoEquipo,
-            tipoEquipo: data.tipoEquipo,
-            laboratorio: data.laboratorio,
-            descripcion: data.descripcion,
-            fecha: data.fecha,
-            reportante: data.reportante,
-            prioridad: data.prioridad,
-            estado: data.estado,
-          });
+          setFormData(data);
         })
         .catch(() => setMessage({ type: 'error', text: 'Error al cargar la incidencia' }))
         .finally(() => setLoading(false));
     }
   }, [editId]);
 
-  // Manejar cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // Limpiar error del campo al escribir
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
-    }
+    if (errors[name]) setErrors({ ...errors, [name]: '' });
   };
 
-  // Validar todos los campos requeridos
   const validate = () => {
     const newErrors = {};
-    if (!formData.codigoEquipo.trim()) newErrors.codigoEquipo = 'El código de equipo es obligatorio';
-    if (!formData.tipoEquipo) newErrors.tipoEquipo = 'Seleccione un tipo de equipo';
-    if (!formData.laboratorio) newErrors.laboratorio = 'Seleccione un laboratorio';
-    if (!formData.descripcion.trim()) newErrors.descripcion = 'La descripción es obligatoria';
-    if (formData.descripcion.trim().length > 0 && formData.descripcion.trim().length < 10) {
-      newErrors.descripcion = 'La descripción debe tener al menos 10 caracteres';
-    }
-    if (!formData.fecha) newErrors.fecha = 'La fecha es obligatoria';
-    if (!formData.reportante.trim()) newErrors.reportante = 'El nombre del reportante es obligatorio';
-    if (!formData.prioridad) newErrors.prioridad = 'Seleccione una prioridad';
+    if (!formData.codigoEquipo.trim()) newErrors.codigoEquipo = 'Obligatorio';
+    if (!formData.tipoEquipo) newErrors.tipoEquipo = 'Seleccione';
+    if (!formData.laboratorio) newErrors.laboratorio = 'Seleccione';
+    if (!formData.descripcion.trim()) newErrors.descripcion = 'Obligatorio';
+    else if (formData.descripcion.trim().length < 10) newErrors.descripcion = 'Mínimo 10 caracteres';
+    if (!formData.fecha) newErrors.fecha = 'Obligatorio';
+    if (!formData.reportante.trim()) newErrors.reportante = 'Obligatorio';
+    if (!formData.prioridad) newErrors.prioridad = 'Seleccione';
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Enviar formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage({ type: '', text: '' });
@@ -99,21 +69,19 @@ function IncidentForm({ editId = null }) {
     try {
       if (editId) {
         await updateIncident(editId, formData);
-        setMessage({ type: 'success', text: '¡Incidencia actualizada exitosamente!' });
+        setMessage({ type: 'success', text: 'Incidencia actualizada exitosamente' });
       } else {
         await createIncident(formData);
-        setMessage({ type: 'success', text: '¡Incidencia registrada exitosamente!' });
-        // Limpiar formulario después de crear
+        setMessage({ type: 'success', text: 'Incidencia registrada exitosamente' });
         setFormData({
           codigoEquipo: '', tipoEquipo: '', laboratorio: '',
           descripcion: '', fecha: new Date().toISOString().split('T')[0],
           reportante: user && user.rol === 'alumno' ? user.codigo : '', prioridad: '', estado: 'Pendiente',
         });
       }
-      // Redirigir a la lista después de 1.5 segundos
       setTimeout(() => navigate('/incidencias'), 1500);
     } catch (error) {
-      setMessage({ type: 'error', text: 'Error al guardar la incidencia. Verifica que JSON Server esté ejecutándose.' });
+      setMessage({ type: 'error', text: 'Error de conexión con el servidor.' });
     } finally {
       setLoading(false);
     }
@@ -121,173 +89,135 @@ function IncidentForm({ editId = null }) {
 
   if (loading && editId) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <span className="loading-text">Cargando incidencia...</span>
+      <div className="d-flex justify-content-center py-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="form-container">
-      <h2 className="form-title">
-        {editId ? '✏️ Editar Incidencia' : '📝 Registrar Nueva Incidencia'}
-      </h2>
-      <p className="form-subtitle">
-        {editId
-          ? 'Modifique los campos necesarios y guarde los cambios.'
-          : 'Complete todos los campos para reportar un equipo dañado.'}
-      </p>
+    <div className="card border-0 shadow-sm">
+      <div className="card-body p-4">
+        {message.text && (
+          <div className={`alert ${message.type === 'success' ? 'alert-success' : 'alert-danger'} d-flex align-items-center`} role="alert">
+            <i className={`bi ${message.type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} me-2`}></i>
+            <div>{message.text}</div>
+          </div>
+        )}
 
-      {/* Mensaje de éxito o error */}
-      {message.text && (
-        <div className={`form-message ${message.type === 'success' ? 'success' : 'error-msg'}`}>
-          {message.type === 'success' ? '✅' : '❌'} {message.text}
-        </div>
-      )}
+        <form onSubmit={handleSubmit}>
+          <div className="row g-4">
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Código de Equipo <span className="text-danger">*</span></label>
+              <input
+                type="text"
+                name="codigoEquipo"
+                value={formData.codigoEquipo}
+                onChange={handleChange}
+                placeholder="Ej: PC-L1-05"
+                className={`form-control ${errors.codigoEquipo ? 'is-invalid' : ''}`}
+              />
+              {errors.codigoEquipo && <div className="invalid-feedback">{errors.codigoEquipo}</div>}
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-grid">
-          {/* Código de equipo */}
-          <div className="form-group">
-            <label className="form-label">
-              Código de Equipo <span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              name="codigoEquipo"
-              value={formData.codigoEquipo}
-              onChange={handleChange}
-              placeholder="Ej: PC-L1-05"
-              className={`form-input ${errors.codigoEquipo ? 'error' : ''}`}
-            />
-            {errors.codigoEquipo && <span className="form-error">{errors.codigoEquipo}</span>}
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Tipo de Equipo <span className="text-danger">*</span></label>
+              <select
+                name="tipoEquipo"
+                value={formData.tipoEquipo}
+                onChange={handleChange}
+                className={`form-select ${errors.tipoEquipo ? 'is-invalid' : ''}`}
+              >
+                <option value="">Seleccionar...</option>
+                {tiposEquipo.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+              {errors.tipoEquipo && <div className="invalid-feedback">{errors.tipoEquipo}</div>}
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Laboratorio <span className="text-danger">*</span></label>
+              <select
+                name="laboratorio"
+                value={formData.laboratorio}
+                onChange={handleChange}
+                className={`form-select ${errors.laboratorio ? 'is-invalid' : ''}`}
+              >
+                <option value="">Seleccionar...</option>
+                {laboratorios.map(l => <option key={l} value={l}>{l}</option>)}
+              </select>
+              {errors.laboratorio && <div className="invalid-feedback">{errors.laboratorio}</div>}
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Prioridad <span className="text-danger">*</span></label>
+              <select
+                name="prioridad"
+                value={formData.prioridad}
+                onChange={handleChange}
+                className={`form-select ${errors.prioridad ? 'is-invalid' : ''}`}
+              >
+                <option value="">Seleccionar...</option>
+                {prioridades.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              {errors.prioridad && <div className="invalid-feedback">{errors.prioridad}</div>}
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Fecha de Reporte <span className="text-danger">*</span></label>
+              <input
+                type="date"
+                name="fecha"
+                value={formData.fecha}
+                onChange={handleChange}
+                className={`form-control ${errors.fecha ? 'is-invalid' : ''}`}
+              />
+              {errors.fecha && <div className="invalid-feedback">{errors.fecha}</div>}
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">Reportante <span className="text-danger">*</span></label>
+              <input
+                type="text"
+                name="reportante"
+                value={formData.reportante}
+                onChange={handleChange}
+                placeholder="Código de alumno o nombre"
+                className={`form-control ${errors.reportante ? 'is-invalid' : ''}`}
+                readOnly={user && user.rol === 'alumno'}
+              />
+              {errors.reportante && <div className="invalid-feedback">{errors.reportante}</div>}
+            </div>
+
+            <div className="col-12">
+              <label className="form-label fw-semibold">Descripción de la Falla <span className="text-danger">*</span></label>
+              <textarea
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleChange}
+                rows="4"
+                placeholder="Describa detalladamente el problema encontrado en el equipo..."
+                className={`form-control ${errors.descripcion ? 'is-invalid' : ''}`}
+              />
+              {errors.descripcion && <div className="invalid-feedback">{errors.descripcion}</div>}
+            </div>
           </div>
 
-          {/* Tipo de equipo */}
-          <div className="form-group">
-            <label className="form-label">
-              Tipo de Equipo <span className="required">*</span>
-            </label>
-            <select
-              name="tipoEquipo"
-              value={formData.tipoEquipo}
-              onChange={handleChange}
-              className={`form-select ${errors.tipoEquipo ? 'error' : ''}`}
-            >
-              <option value="">Seleccionar...</option>
-              {tiposEquipo.map((tipo) => (
-                <option key={tipo} value={tipo}>{tipo}</option>
-              ))}
-            </select>
-            {errors.tipoEquipo && <span className="form-error">{errors.tipoEquipo}</span>}
+          <div className="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <button type="button" className="btn btn-light border" onClick={() => navigate('/incidencias')}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn btn-primary px-4" disabled={loading}>
+              {loading ? (
+                <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Guardando...</>
+              ) : (
+                editId ? <><i className="bi bi-save me-2"></i>Guardar Cambios</> : <><i className="bi bi-send me-2"></i>Registrar Incidencia</>
+              )}
+            </button>
           </div>
-
-          {/* Laboratorio */}
-          <div className="form-group">
-            <label className="form-label">
-              Laboratorio <span className="required">*</span>
-            </label>
-            <select
-              name="laboratorio"
-              value={formData.laboratorio}
-              onChange={handleChange}
-              className={`form-select ${errors.laboratorio ? 'error' : ''}`}
-            >
-              <option value="">Seleccionar...</option>
-              {laboratorios.map((lab) => (
-                <option key={lab} value={lab}>{lab}</option>
-              ))}
-            </select>
-            {errors.laboratorio && <span className="form-error">{errors.laboratorio}</span>}
-          </div>
-
-          {/* Fecha */}
-          <div className="form-group">
-            <label className="form-label">
-              Fecha <span className="required">*</span>
-            </label>
-            <input
-              type="date"
-              name="fecha"
-              value={formData.fecha}
-              onChange={handleChange}
-              className={`form-input ${errors.fecha ? 'error' : ''}`}
-            />
-            {errors.fecha && <span className="form-error">{errors.fecha}</span>}
-          </div>
-
-          {/* Reportante */}
-          <div className="form-group">
-            <label className="form-label">
-              Reportante <span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              name="reportante"
-              value={formData.reportante}
-              onChange={handleChange}
-              placeholder="Nombre completo"
-              className={`form-input ${errors.reportante ? 'error' : ''}`}
-              readOnly={user && user.rol === 'alumno'}
-              style={user && user.rol === 'alumno' ? { backgroundColor: '#f5f5f5', color: '#888' } : {}}
-            />
-            {errors.reportante && <span className="form-error">{errors.reportante}</span>}
-          </div>
-
-          {/* Prioridad */}
-          <div className="form-group">
-            <label className="form-label">
-              Prioridad <span className="required">*</span>
-            </label>
-            <select
-              name="prioridad"
-              value={formData.prioridad}
-              onChange={handleChange}
-              className={`form-select ${errors.prioridad ? 'error' : ''}`}
-            >
-              <option value="">Seleccionar...</option>
-              {prioridades.map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-            {errors.prioridad && <span className="form-error">{errors.prioridad}</span>}
-          </div>
-
-          {/* Descripción */}
-          <div className="form-group full-width">
-            <label className="form-label">
-              Descripción de la Falla <span className="required">*</span>
-            </label>
-            <textarea
-              name="descripcion"
-              value={formData.descripcion}
-              onChange={handleChange}
-              placeholder="Describa detalladamente el problema encontrado en el equipo..."
-              className={`form-textarea ${errors.descripcion ? 'error' : ''}`}
-            />
-            {errors.descripcion && <span className="form-error">{errors.descripcion}</span>}
-          </div>
-        </div>
-
-        {/* Botones de acción */}
-        <div className="form-actions">
-          <button
-            type="button"
-            className="btn btn-outline"
-            onClick={() => navigate('/incidencias')}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-          >
-            {loading ? '⏳ Guardando...' : (editId ? '💾 Guardar Cambios' : '📤 Registrar Incidencia')}
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
