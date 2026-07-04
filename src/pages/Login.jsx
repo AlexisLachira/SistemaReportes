@@ -45,7 +45,10 @@ function Login() {
           <div className="bg-primary text-white d-inline-flex justify-content-center align-items-center rounded-circle mb-3 shadow-sm" style={{width: '60px', height: '60px'}}>
             <i className="bi bi-pc-display-horizontal fs-2"></i>
           </div>
-          <h4 className="fw-bold text-primary mb-1">UNP Soporte</h4>
+          <h4 className="fw-bold text-primary mb-1 d-flex align-items-center justify-content-center">
+            <img src="/fiilogo.png" alt="Logo FII" style={{ height: '40px', marginRight: '10px' }} />
+            UNP Soporte
+          </h4>
           <p className="text-muted small">Sistema de Reporte de Equipos</p>
         </div>
 
