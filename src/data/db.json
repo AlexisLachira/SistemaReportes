@@ -85,7 +85,7 @@
       "marca": "Dell",
       "modelo": "OptiPlex 7090",
       "laboratorio": "Laboratorio 1",
-      "estado": "Operativo",
+      "estado": "Averiado",
       "fechaAdquisicion": "2023-01-15",
       "observaciones": ""
     },
@@ -145,7 +145,7 @@
       "marca": "Epson",
       "modelo": "PowerLite E20",
       "laboratorio": "Laboratorio 3",
-      "estado": "Operativo",
+      "estado": "Averiado",
       "fechaAdquisicion": "2023-08-10",
       "observaciones": ""
     }
@@ -182,7 +182,31 @@
       "fecha": "2025-06-20",
       "reportante": "202400003",
       "prioridad": "Alta",
-      "estado": "Asignada"
+      "estado": "Revisada"
+    },
+    {
+      "codigoEquipo": "PC-LAB01-001",
+      "equipoId": "1",
+      "tipoEquipo": "PC",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "Pantalla rota",
+      "fecha": "2026-07-04",
+      "reportante": "Administrador Principal",
+      "prioridad": "Baja",
+      "estado": "Asignada",
+      "id": "aocKkbL9gE0"
+    },
+    {
+      "codigoEquipo": "PROY-LAB03-01",
+      "equipoId": "6",
+      "tipoEquipo": "Proyector",
+      "laboratorio": "Laboratorio 3",
+      "descripcion": "No enciende",
+      "fecha": "2026-07-04",
+      "reportante": "Administrador Principal",
+      "prioridad": "Alta",
+      "estado": "Revisada",
+      "id": "ajBXnyzY88k"
     }
   ],
   "mantenimientos": [
@@ -233,6 +257,24 @@
       "tiempoEmpleado": "",
       "fechaFin": "2026-07-04",
       "id": "Un6AFsUNXlI"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "equipoId": "1",
+      "tecnicoId": "TEC001",
+      "nombreTecnico": "Juan Pablo Pérez Torres",
+      "fechaProgramada": "2026-07-05",
+      "prioridad": "Baja",
+      "tipoMantenimiento": "Correctivo",
+      "observacionesIniciales": "",
+      "fechaInicio": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "tiempoEmpleado": "",
+      "fechaFin": "",
+      "id": "kEFvMWKMc3M"
     }
   ],
   "historialIncidencias": [
@@ -339,6 +381,54 @@
       "observacion": "Cambio manual realizado por el administrador",
       "fecha": "2026-07-04T23:14:05.592Z",
       "id": "PP8_cncH2Tg"
+    },
+    {
+      "incidenciaId": "3",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Actualización de estado desde listado",
+      "fecha": "2026-07-04T23:26:36.332Z",
+      "id": "GQ6GnwtqmiM"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Administrador Principal",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada",
+      "fecha": "2026-07-04T23:27:13.546Z",
+      "id": "tvuSogIKg_Q"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-04T23:28:09.336Z",
+      "id": "-dcGhUM2JtE"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
+      "fecha": "2026-07-04T23:28:20.849Z",
+      "id": "ymEgp9a7m4s"
+    },
+    {
+      "incidenciaId": "ajBXnyzY88k",
+      "usuario": "Administrador Principal",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada",
+      "fecha": "2026-07-04T23:29:55.824Z",
+      "id": "MHFBcM12q1U"
+    },
+    {
+      "incidenciaId": "ajBXnyzY88k",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-04T23:41:18.015Z",
+      "id": "2e2aWPDpPyU"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

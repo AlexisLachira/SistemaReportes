@@ -153,9 +153,10 @@ export const getHistorial = async () => {
 };
 
 export const getHistorialByIncidencia = async (incidenciaId) => {
-  const response = await fetch(`${HISTORIAL_URL}?incidenciaId=${incidenciaId}`);
+  const response = await fetch(HISTORIAL_URL);
   if (!response.ok) throw new Error("Error al obtener historial");
-  return response.json();
+  const data = await response.json();
+  return data.filter(h => String(h.incidenciaId) === String(incidenciaId));
 };
 
 export const createHistorial = async (data) => {

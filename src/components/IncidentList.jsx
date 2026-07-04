@@ -34,6 +34,11 @@ function IncidentList() {
   };
 
   useEffect(() => {
+    console.log("=== DEBUG: ESTADO REAL DE INCIDENCIAS ===");
+    incidencias.forEach(inc => {
+      console.log(`[ORIGINAL DB] ID: ${inc.id} | Código: ${inc.codigoEquipo} | Estado Real: ${inc.estado}`);
+    });
+
     let resultado = [...incidencias];
     if (filtros.busqueda) {
       resultado = resultado.filter(i => 
@@ -44,6 +49,12 @@ function IncidentList() {
     if (filtros.laboratorio) resultado = resultado.filter(i => i.laboratorio === filtros.laboratorio);
     if (filtros.prioridad) resultado = resultado.filter(i => i.prioridad === filtros.prioridad);
     if (filtros.estado) resultado = resultado.filter(i => i.estado === filtros.estado);
+    
+    console.log(`=== DEBUG: FILTRO APLICADO ===\nTotal en db.json (original): ${incidencias.length}\nTotal después del filtro (UI): ${resultado.length}`);
+    resultado.forEach(inc => {
+      console.log(`[FILTRADA UI] ID: ${inc.id} | Estado a mostrar: ${inc.estado}`);
+    });
+
     setFiltradas(resultado);
   }, [filtros, incidencias]);
 
@@ -165,6 +176,8 @@ function IncidentList() {
                           >
                             <option value="Reportada" className="bg-white text-dark">Reportada</option>
                             <option value="Revisada" className="bg-white text-dark">Revisada</option>
+                            <option value="Asignada" className="bg-white text-dark" disabled>Asignada</option>
+                            <option value="Reparada" className="bg-white text-dark" disabled>Reparada</option>
                             <option value="Cerrada" className="bg-white text-dark">Cerrada</option>
                           </select>
                         ) : (
