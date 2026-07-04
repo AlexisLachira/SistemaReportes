@@ -1,23 +1,28 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { getIncidents } from '../services/api';
+import { getIncidents, getEquipos } from '../services/api';
 import IncidentCard from '../components/IncidentCard';
 import Statistics from '../components/Statistics';
 import { AuthContext } from '../auth/AuthContext';
 
 function Dashboard() {
   const [incidencias, setIncidencias] = useState([]);
+  const [equipos, setEquipos] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getIncidents();
+        const [incidenciasData, equiposData] = await Promise.all([
+          getIncidents(),
+          getEquipos()
+        ]);
         const dataRole = user.rol === 'administrador' 
-          ? data 
-          : data.filter(i => i.reportante === user.nombre || i.reportante === user.codigo);
+          ? incidenciasData 
+          : incidenciasData.filter(i => i.reportante === user.nombre || i.reportante === user.codigo);
         setIncidencias(dataRole);
+        setEquipos(equiposData);
       } catch (error) {
         console.error('Error al cargar datos del dashboard:', error);
       } finally {
@@ -31,6 +36,11 @@ function Dashboard() {
   const pendientes = incidencias.filter((i) => i.estado === 'Pendiente').length;
   const enProceso = incidencias.filter((i) => i.estado === 'En proceso').length;
   const resueltos = incidencias.filter((i) => i.estado === 'Resuelto').length;
+
+  const equiposTotal = equipos.length;
+  const equiposOperativos = equipos.filter(e => e.estado === 'Operativo').length;
+  const equiposAveriados = equipos.filter(e => e.estado === 'Averiado' || e.estado === 'Fuera de servicio').length;
+  const equiposMantenimiento = equipos.filter(e => e.estado === 'En mantenimiento').length;
 
   const recientes = [...incidencias]
     .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
@@ -61,9 +71,26 @@ function Dashboard() {
         <h1 className="h3 fw-bold text-primary mb-1">
           <i className="bi bi-graph-up me-2"></i> Dashboard
         </h1>
-        <p className="text-muted">Resumen general de incidencias de equipos dañados</p>
+        <p className="text-muted">Resumen general de incidencias e inventario</p>
       </div>
 
+      <h5 className="mb-3 text-secondary"><i className="bi bi-pc-display me-2"></i>Estado del Inventario</h5>
+      <div className="row g-3 mb-4">
+        <div className="col-12 col-sm-6 col-lg-3">
+          <IncidentCard label="Equipos Registrados" valor={equiposTotal} icon="bi-pc-display-horizontal" bg="primary" />
+        </div>
+        <div className="col-12 col-sm-6 col-lg-3">
+          <IncidentCard label="Operativos" valor={equiposOperativos} icon="bi-check-circle" bg="success" />
+        </div>
+        <div className="col-12 col-sm-6 col-lg-3">
+          <IncidentCard label="En Mantenimiento" valor={equiposMantenimiento} icon="bi-tools" bg="warning" textDark />
+        </div>
+        <div className="col-12 col-sm-6 col-lg-3">
+          <IncidentCard label="Averiados / Inactivos" valor={equiposAveriados} icon="bi-exclamation-triangle" bg="danger" />
+        </div>
+      </div>
+
+      <h5 className="mb-3 text-secondary mt-4"><i className="bi bi-ticket-detailed me-2"></i>Estado de Incidencias</h5>
       <div className="row g-3 mb-4">
         <div className="col-12 col-sm-6 col-lg-3">
           <IncidentCard label="Total" valor={total} icon="bi-box-seam" bg="primary" />

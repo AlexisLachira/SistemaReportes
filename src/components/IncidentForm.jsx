@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createIncident, getIncidentById, updateIncident } from '../services/api';
+import { createIncident, getIncidentById, updateIncident, getEquipos } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
 
 function IncidentForm({ editId = null }) {
@@ -9,8 +9,10 @@ function IncidentForm({ editId = null }) {
 
   const [formData, setFormData] = useState({
     codigoEquipo: '',
+    equipoId: '', // Nuevo campo para guardar el ID del equipo
     tipoEquipo: '',
     laboratorio: '',
+    estadoEquipo: '', // Estado actual del equipo (read-only visual)
     descripcion: '',
     fecha: new Date().toISOString().split('T')[0],
     reportante: user && user.rol === 'alumno' ? user.codigo : '',
@@ -18,15 +20,17 @@ function IncidentForm({ editId = null }) {
     estado: 'Pendiente',
   });
 
+  const [equiposList, setEquiposList] = useState([]);
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState({ type: '', text: '' });
   const [loading, setLoading] = useState(false);
 
-  const tiposEquipo = ['PC', 'Monitor', 'Teclado', 'Mouse', 'Impresora', 'Proyector', 'Otro'];
-  const laboratorios = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Administración'];
   const prioridades = ['Alta', 'Media', 'Baja'];
 
   useEffect(() => {
+    // Cargar equipos para el selector
+    getEquipos().then(setEquiposList).catch(console.error);
+
     if (editId) {
       setLoading(true);
       getIncidentById(editId)
@@ -40,15 +44,38 @@ function IncidentForm({ editId = null }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    
+    if (name === 'codigoEquipo') {
+      const selectedEquipo = equiposList.find(eq => eq.codigoPatrimonial === value);
+      if (selectedEquipo) {
+        setFormData({
+          ...formData,
+          codigoEquipo: selectedEquipo.codigoPatrimonial,
+          equipoId: selectedEquipo.id,
+          tipoEquipo: selectedEquipo.tipoEquipo,
+          laboratorio: selectedEquipo.laboratorio,
+          estadoEquipo: selectedEquipo.estado
+        });
+      } else {
+        setFormData({
+          ...formData,
+          codigoEquipo: value,
+          equipoId: '',
+          tipoEquipo: '',
+          laboratorio: '',
+          estadoEquipo: ''
+        });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+    
     if (errors[name]) setErrors({ ...errors, [name]: '' });
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.codigoEquipo.trim()) newErrors.codigoEquipo = 'Obligatorio';
-    if (!formData.tipoEquipo) newErrors.tipoEquipo = 'Seleccione';
-    if (!formData.laboratorio) newErrors.laboratorio = 'Seleccione';
+    if (!formData.codigoEquipo) newErrors.codigoEquipo = 'Seleccione';
     if (!formData.descripcion.trim()) newErrors.descripcion = 'Obligatorio';
     else if (formData.descripcion.trim().length < 10) newErrors.descripcion = 'Mínimo 10 caracteres';
     if (!formData.fecha) newErrors.fecha = 'Obligatorio';
@@ -67,14 +94,17 @@ function IncidentForm({ editId = null }) {
 
     setLoading(true);
     try {
+      const dataToSave = { ...formData };
+      delete dataToSave.estadoEquipo; // No necesitamos guardar esto en la base de datos de incidencias, solo visual
+
       if (editId) {
-        await updateIncident(editId, formData);
+        await updateIncident(editId, dataToSave);
         setMessage({ type: 'success', text: 'Incidencia actualizada exitosamente' });
       } else {
-        await createIncident(formData);
+        await createIncident(dataToSave);
         setMessage({ type: 'success', text: 'Incidencia registrada exitosamente' });
         setFormData({
-          codigoEquipo: '', tipoEquipo: '', laboratorio: '',
+          codigoEquipo: '', equipoId: '', tipoEquipo: '', laboratorio: '', estadoEquipo: '',
           descripcion: '', fecha: new Date().toISOString().split('T')[0],
           reportante: user && user.rol === 'alumno' ? user.codigo : '', prioridad: '', estado: 'Pendiente',
         });
@@ -109,45 +139,52 @@ function IncidentForm({ editId = null }) {
 
         <form onSubmit={handleSubmit}>
           <div className="row g-4">
-            <div className="col-md-6">
-              <label className="form-label fw-semibold">Código de Equipo <span className="text-danger">*</span></label>
-              <input
-                type="text"
+            <div className="col-md-12">
+              <label className="form-label fw-semibold">Equipo <span className="text-danger">*</span></label>
+              <select
                 name="codigoEquipo"
                 value={formData.codigoEquipo}
                 onChange={handleChange}
-                placeholder="Ej: PC-L1-05"
-                className={`form-control ${errors.codigoEquipo ? 'is-invalid' : ''}`}
-              />
+                className={`form-select ${errors.codigoEquipo ? 'is-invalid' : ''}`}
+              >
+                <option value="">Seleccione un equipo del inventario...</option>
+                {equiposList.map(eq => (
+                  <option key={eq.id} value={eq.codigoPatrimonial}>
+                    {eq.codigoPatrimonial} - {eq.tipoEquipo} ({eq.laboratorio})
+                  </option>
+                ))}
+              </select>
               {errors.codigoEquipo && <div className="invalid-feedback">{errors.codigoEquipo}</div>}
             </div>
 
-            <div className="col-md-6">
-              <label className="form-label fw-semibold">Tipo de Equipo <span className="text-danger">*</span></label>
-              <select
-                name="tipoEquipo"
+            <div className="col-md-4">
+              <label className="form-label fw-semibold">Tipo de Equipo</label>
+              <input
+                type="text"
                 value={formData.tipoEquipo}
-                onChange={handleChange}
-                className={`form-select ${errors.tipoEquipo ? 'is-invalid' : ''}`}
-              >
-                <option value="">Seleccionar...</option>
-                {tiposEquipo.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-              {errors.tipoEquipo && <div className="invalid-feedback">{errors.tipoEquipo}</div>}
+                readOnly
+                className="form-control bg-light"
+              />
             </div>
 
-            <div className="col-md-6">
-              <label className="form-label fw-semibold">Laboratorio <span className="text-danger">*</span></label>
-              <select
-                name="laboratorio"
+            <div className="col-md-4">
+              <label className="form-label fw-semibold">Laboratorio</label>
+              <input
+                type="text"
                 value={formData.laboratorio}
-                onChange={handleChange}
-                className={`form-select ${errors.laboratorio ? 'is-invalid' : ''}`}
-              >
-                <option value="">Seleccionar...</option>
-                {laboratorios.map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
-              {errors.laboratorio && <div className="invalid-feedback">{errors.laboratorio}</div>}
+                readOnly
+                className="form-control bg-light"
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label fw-semibold">Estado Actual del Equipo</label>
+              <input
+                type="text"
+                value={formData.estadoEquipo || ''}
+                readOnly
+                className="form-control bg-light text-danger fw-semibold"
+              />
             </div>
 
             <div className="col-md-6">

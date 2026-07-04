@@ -40,6 +40,12 @@ function Sidebar({ isOpen, onClose }) {
               </NavLink>
             </li>
             
+            <li className="nav-item mt-2">
+              <NavLink to="/inventario" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
+                <i className="bi bi-pc-display sidebar-icon"></i> Inventario de Equipos
+              </NavLink>
+            </li>
+            
             {user && user.rol === 'administrador' && (
               <li className="nav-item mt-2 border-top pt-2">
                 <NavLink to="/reportes" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>

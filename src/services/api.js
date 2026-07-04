@@ -70,3 +70,46 @@ export const deleteIncident = async (id) => {
   if (!response.ok) throw new Error("Error al eliminar incidencia");
   return response.json();
 };
+
+// --- EQUIPOS ---
+const EQUIPOS_URL = "http://localhost:3001/equipos";
+
+export const getEquipos = async () => {
+  const response = await fetch(EQUIPOS_URL);
+  if (!response.ok) throw new Error("Error al obtener equipos");
+  return response.json();
+};
+
+export const getEquipoById = async (id) => {
+  const response = await fetch(`${EQUIPOS_URL}/${id}`);
+  if (!response.ok) throw new Error("Equipo no encontrado");
+  return response.json();
+};
+
+export const createEquipo = async (data) => {
+  const response = await fetch(EQUIPOS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Error al crear equipo");
+  return response.json();
+};
+
+export const updateEquipo = async (id, data) => {
+  const response = await fetch(`${EQUIPOS_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Error al actualizar equipo");
+  return response.json();
+};
+
+export const deleteEquipo = async (id) => {
+  const response = await fetch(`${EQUIPOS_URL}/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) throw new Error("Error al eliminar equipo");
+  return response.json();
+};

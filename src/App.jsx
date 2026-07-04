@@ -8,6 +8,8 @@ import IncidentDetails from "./pages/IncidentDetails";
 import Reports from "./pages/Reports";
 import IncidentList from "./components/IncidentList";
 import Login from "./pages/Login";
+import Inventory from "./pages/Inventory";
+import NewEquipment from "./pages/NewEquipment";
 import { AuthProvider } from "./auth/AuthContext";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { RoleProtectedRoute } from "./auth/RoleProtectedRoute";
@@ -42,6 +44,11 @@ function AppContent() {
             <Route path="/incidencias" element={<ProtectedRoute><IncidentList /></ProtectedRoute>} />
             <Route path="/incidencias/:id" element={<ProtectedRoute><IncidentDetails /></ProtectedRoute>} />
             <Route path="/editar-incidencia/:id" element={<RoleProtectedRoute rol="administrador"><NewIncident /></RoleProtectedRoute>} />
+            
+            <Route path="/inventario" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
+            <Route path="/nuevo-equipo" element={<RoleProtectedRoute rol="administrador"><NewEquipment /></RoleProtectedRoute>} />
+            <Route path="/editar-equipo/:id" element={<RoleProtectedRoute rol="administrador"><NewEquipment /></RoleProtectedRoute>} />
+
             <Route path="/reportes" element={<RoleProtectedRoute rol="administrador"><Reports /></RoleProtectedRoute>} />
           </Routes>
         </main>

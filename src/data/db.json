@@ -9,7 +9,7 @@
       "fecha": "2025-06-01",
       "reportante": "Juan Pérez",
       "prioridad": "Alta",
-      "estado": "En proceso"
+      "estado": "Resuelto"
     },
     {
       "id": "2",
@@ -20,7 +20,7 @@
       "fecha": "2025-06-02",
       "reportante": "María López",
       "prioridad": "Media",
-      "estado": "Pendiente"
+      "estado": "En proceso"
     },
     {
       "id": "3",
@@ -172,6 +172,188 @@
       "contrasena": "alexis123",
       "rol": "alumno",
       "nombre": "Manuel Alexis Lachira Iman"
+    }
+  ],
+  "equipos": [
+    {
+      "id": "1",
+      "codigoPatrimonial": "PC-LAB01-001",
+      "numeroSerie": "SN-PC01001",
+      "tipoEquipo": "PC",
+      "marca": "Dell",
+      "modelo": "OptiPlex 7090",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2023-01-15",
+      "observaciones": "Equipo de profesor"
+    },
+    {
+      "id": "2",
+      "codigoPatrimonial": "PC-LAB01-002",
+      "numeroSerie": "SN-PC01002",
+      "tipoEquipo": "PC",
+      "marca": "Dell",
+      "modelo": "OptiPlex 7090",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2023-01-15",
+      "observaciones": ""
+    },
+    {
+      "id": "3",
+      "codigoPatrimonial": "PC-LAB01-003",
+      "numeroSerie": "SN-PC01003",
+      "tipoEquipo": "PC",
+      "marca": "Dell",
+      "modelo": "OptiPlex 7090",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Averiado",
+      "fechaAdquisicion": "2023-01-15",
+      "observaciones": "No enciende"
+    },
+    {
+      "id": "4",
+      "codigoPatrimonial": "MON-LAB01-001",
+      "numeroSerie": "SN-MON01001",
+      "tipoEquipo": "Monitor",
+      "marca": "Samsung",
+      "modelo": "F24T35",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2023-01-20",
+      "observaciones": ""
+    },
+    {
+      "id": "5",
+      "codigoPatrimonial": "PC-LAB02-001",
+      "numeroSerie": "SN-PC02001",
+      "tipoEquipo": "PC",
+      "marca": "HP",
+      "modelo": "ProDesk 400",
+      "laboratorio": "Laboratorio 2",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2022-05-10",
+      "observaciones": ""
+    },
+    {
+      "id": "6",
+      "codigoPatrimonial": "PC-LAB02-002",
+      "numeroSerie": "SN-PC02002",
+      "tipoEquipo": "PC",
+      "marca": "HP",
+      "modelo": "ProDesk 400",
+      "laboratorio": "Laboratorio 2",
+      "estado": "En mantenimiento",
+      "fechaAdquisicion": "2022-05-10",
+      "observaciones": "Cambio de pasta térmica"
+    },
+    {
+      "id": "7",
+      "codigoPatrimonial": "PROY-LAB02-001",
+      "numeroSerie": "SN-PRJ02001",
+      "tipoEquipo": "Proyector",
+      "marca": "Epson",
+      "modelo": "PowerLite 119W",
+      "laboratorio": "Laboratorio 2",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2022-06-01",
+      "observaciones": ""
+    },
+    {
+      "id": "8",
+      "codigoPatrimonial": "SW-LAB02-001",
+      "numeroSerie": "SN-SW02001",
+      "tipoEquipo": "Switch",
+      "marca": "Cisco",
+      "modelo": "Catalyst 2960-X",
+      "laboratorio": "Laboratorio 2",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2021-08-15",
+      "observaciones": "Switch principal Lab 2"
+    },
+    {
+      "id": "9",
+      "codigoPatrimonial": "PC-LAB03-001",
+      "numeroSerie": "SN-PC03001",
+      "tipoEquipo": "PC",
+      "marca": "Lenovo",
+      "modelo": "ThinkCentre M70",
+      "laboratorio": "Laboratorio 3",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2024-02-10",
+      "observaciones": ""
+    },
+    {
+      "id": "10",
+      "codigoPatrimonial": "PC-LAB03-002",
+      "numeroSerie": "SN-PC03002",
+      "tipoEquipo": "PC",
+      "marca": "Lenovo",
+      "modelo": "ThinkCentre M70",
+      "laboratorio": "Laboratorio 3",
+      "estado": "Fuera de servicio",
+      "fechaAdquisicion": "2024-02-10",
+      "observaciones": "Placa madre dañada irremediablemente"
+    },
+    {
+      "id": "11",
+      "codigoPatrimonial": "IMP-ADM-001",
+      "numeroSerie": "SN-IMP001",
+      "tipoEquipo": "Impresora",
+      "marca": "HP",
+      "modelo": "LaserJet Pro",
+      "laboratorio": "Administración",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2021-03-22",
+      "observaciones": ""
+    },
+    {
+      "id": "12",
+      "codigoPatrimonial": "RT-ADM-001",
+      "numeroSerie": "SN-RT001",
+      "tipoEquipo": "Router",
+      "marca": "MikroTik",
+      "modelo": "RB2011",
+      "laboratorio": "Administración",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2020-11-05",
+      "observaciones": "Router principal"
+    },
+    {
+      "id": "13",
+      "codigoPatrimonial": "PC-LAB04-001",
+      "numeroSerie": "SN-PC04001",
+      "tipoEquipo": "PC",
+      "marca": "Asus",
+      "modelo": "ExpertCenter",
+      "laboratorio": "Laboratorio 4",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2023-09-12",
+      "observaciones": ""
+    },
+    {
+      "id": "14",
+      "codigoPatrimonial": "MON-LAB04-001",
+      "numeroSerie": "SN-MON04001",
+      "tipoEquipo": "Monitor",
+      "marca": "LG",
+      "modelo": "24MP60G",
+      "laboratorio": "Laboratorio 4",
+      "estado": "Averiado",
+      "fechaAdquisicion": "2023-09-15",
+      "observaciones": "Pantalla con líneas verticales"
+    },
+    {
+      "id": "15",
+      "codigoPatrimonial": "PC-LAB04-002",
+      "numeroSerie": "SN-PC04002",
+      "tipoEquipo": "PC",
+      "marca": "Asus",
+      "modelo": "ExpertCenter",
+      "laboratorio": "Laboratorio 4",
+      "estado": "En mantenimiento",
+      "fechaAdquisicion": "2023-09-12",
+      "observaciones": "Actualización de RAM"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
