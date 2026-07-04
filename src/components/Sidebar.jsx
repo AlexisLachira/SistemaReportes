@@ -29,29 +29,56 @@ function Sidebar({ isOpen, onClose }) {
                 <i className="bi bi-grid-1x2-fill sidebar-icon"></i> Dashboard
               </NavLink>
             </li>
-            <li className="nav-item mt-2">
-              <NavLink to="/nueva-incidencia" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
-                <i className="bi bi-plus-circle-fill sidebar-icon"></i> Nueva Incidencia
-              </NavLink>
-            </li>
-            <li className="nav-item mt-2">
-              <NavLink to="/incidencias" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
-                <i className="bi bi-card-list sidebar-icon"></i> Listado
-              </NavLink>
-            </li>
-            
-            <li className="nav-item mt-2">
-              <NavLink to="/inventario" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
-                <i className="bi bi-pc-display sidebar-icon"></i> Inventario de Equipos
-              </NavLink>
-            </li>
-            
-            {user && user.rol === 'administrador' && (
-              <li className="nav-item mt-2 border-top pt-2">
-                <NavLink to="/reportes" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
-                  <i className="bi bi-bar-chart-fill sidebar-icon"></i> Reportes
+            {user && user.rol !== 'tecnico' && (
+              <li className="nav-item mt-2">
+                <NavLink to="/nueva-incidencia" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
+                  <i className="bi bi-plus-circle-fill sidebar-icon"></i> Nueva Incidencia
                 </NavLink>
               </li>
+            )}
+            
+            {user && user.rol !== 'tecnico' && (
+              <li className="nav-item mt-2">
+                <NavLink to="/incidencias" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
+                  <i className="bi bi-card-list sidebar-icon"></i> Listado
+                </NavLink>
+              </li>
+            )}
+
+            {user && user.rol === 'tecnico' && (
+              <li className="nav-item mt-2 border-top pt-2">
+                <NavLink to="/mis-mantenimientos" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
+                  <i className="bi bi-wrench-adjustable sidebar-icon"></i> Mis Mantenimientos
+                </NavLink>
+              </li>
+            )}
+
+            {user && user.rol === 'administrador' && (
+              <>
+                <li className="nav-item mt-2">
+                  <NavLink to="/mantenimientos" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
+                    <i className="bi bi-tools sidebar-icon"></i> Gestión Mantenimientos
+                  </NavLink>
+                </li>
+                
+                <li className="nav-item mt-2">
+                  <NavLink to="/inventario" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
+                    <i className="bi bi-pc-display sidebar-icon"></i> Inventario de Equipos
+                  </NavLink>
+                </li>
+                
+                <li className="nav-item mt-2">
+                  <NavLink to="/tecnicos" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
+                    <i className="bi bi-people-fill sidebar-icon"></i> Técnicos
+                  </NavLink>
+                </li>
+                
+                <li className="nav-item mt-2 border-top pt-2">
+                  <NavLink to="/reportes" className={({ isActive }) => `nav-link sidebar-link ${isActive ? 'active' : ''}`} onClick={onClose}>
+                    <i className="bi bi-bar-chart-fill sidebar-icon"></i> Reportes
+                  </NavLink>
+                </li>
+              </>
             )}
           </ul>
         </div>

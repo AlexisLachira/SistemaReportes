@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createIncident, getIncidentById, updateIncident, getEquipos } from '../services/api';
+import { createIncident, getIncidentById, updateIncident, getEquipos, getEquipoById, updateEquipo, createHistorial } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
 
 function IncidentForm({ editId = null }) {
@@ -15,9 +15,9 @@ function IncidentForm({ editId = null }) {
     estadoEquipo: '', // Estado actual del equipo (read-only visual)
     descripcion: '',
     fecha: new Date().toISOString().split('T')[0],
-    reportante: user && user.rol === 'alumno' ? user.codigo : '',
+    reportante: user ? user.nombre : '',
     prioridad: '',
-    estado: 'Pendiente',
+    estado: 'Reportada',
   });
 
   const [equiposList, setEquiposList] = useState([]);
@@ -35,7 +35,11 @@ function IncidentForm({ editId = null }) {
       setLoading(true);
       getIncidentById(editId)
         .then((data) => {
-          setFormData(data);
+          if (data.estado === 'Cerrada') {
+            setMessage({ type: 'error', text: 'No se puede editar una incidencia que ya ha sido cerrada.' });
+          } else {
+            setFormData(data);
+          }
         })
         .catch(() => setMessage({ type: 'error', text: 'Error al cargar la incidencia' }))
         .finally(() => setLoading(false));
@@ -101,12 +105,29 @@ function IncidentForm({ editId = null }) {
         await updateIncident(editId, dataToSave);
         setMessage({ type: 'success', text: 'Incidencia actualizada exitosamente' });
       } else {
-        await createIncident(dataToSave);
+        const newInc = await createIncident(dataToSave);
+        
+        await createHistorial({
+          incidenciaId: newInc.id,
+          usuario: user.nombre,
+          accion: 'Reportó incidencia',
+          observacion: 'Falla inicial reportada'
+        });
+
+        if (formData.equipoId) {
+          try {
+            const eqData = await getEquipoById(formData.equipoId);
+            await updateEquipo(formData.equipoId, { ...eqData, estado: 'Averiado' });
+          } catch (e) {
+            console.error('Error al actualizar el estado del equipo', e);
+          }
+        }
+
         setMessage({ type: 'success', text: 'Incidencia registrada exitosamente' });
         setFormData({
           codigoEquipo: '', equipoId: '', tipoEquipo: '', laboratorio: '', estadoEquipo: '',
           descripcion: '', fecha: new Date().toISOString().split('T')[0],
-          reportante: user && user.rol === 'alumno' ? user.codigo : '', prioridad: '', estado: 'Pendiente',
+          reportante: user ? user.nombre : '', prioridad: '', estado: 'Reportada',
         });
       }
       setTimeout(() => navigate('/incidencias'), 1500);
@@ -138,6 +159,7 @@ function IncidentForm({ editId = null }) {
         )}
 
         <form onSubmit={handleSubmit}>
+          <fieldset disabled={message.type === 'error' && message.text.includes('cerrada')}>
           <div className="row g-4">
             <div className="col-md-12">
               <label className="form-label fw-semibold">Equipo <span className="text-danger">*</span></label>
@@ -219,10 +241,8 @@ function IncidentForm({ editId = null }) {
                 type="text"
                 name="reportante"
                 value={formData.reportante}
-                onChange={handleChange}
-                placeholder="Código de alumno o nombre"
-                className={`form-control ${errors.reportante ? 'is-invalid' : ''}`}
-                readOnly={user && user.rol === 'alumno'}
+                readOnly
+                className={`form-control bg-light ${errors.reportante ? 'is-invalid' : ''}`}
               />
               {errors.reportante && <div className="invalid-feedback">{errors.reportante}</div>}
             </div>
@@ -253,6 +273,7 @@ function IncidentForm({ editId = null }) {
               )}
             </button>
           </div>
+          </fieldset>
         </form>
       </div>
     </div>

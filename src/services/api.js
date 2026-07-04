@@ -113,3 +113,100 @@ export const deleteEquipo = async (id) => {
   if (!response.ok) throw new Error("Error al eliminar equipo");
   return response.json();
 };
+
+// --- MANTENIMIENTOS ---
+const MANTENIMIENTOS_URL = "http://localhost:3001/mantenimientos";
+
+export const getMantenimientos = async () => {
+  const response = await fetch(MANTENIMIENTOS_URL);
+  if (!response.ok) throw new Error("Error al obtener mantenimientos");
+  return response.json();
+};
+
+export const createMantenimiento = async (data) => {
+  const response = await fetch(MANTENIMIENTOS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Error al crear mantenimiento");
+  return response.json();
+};
+
+export const updateMantenimiento = async (id, data) => {
+  const response = await fetch(`${MANTENIMIENTOS_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Error al actualizar mantenimiento");
+  return response.json();
+};
+
+// --- HISTORIAL ---
+const HISTORIAL_URL = "http://localhost:3001/historialIncidencias";
+
+export const getHistorial = async () => {
+  const response = await fetch(HISTORIAL_URL);
+  if (!response.ok) throw new Error("Error al obtener historial");
+  return response.json();
+};
+
+export const getHistorialByIncidencia = async (incidenciaId) => {
+  const response = await fetch(`${HISTORIAL_URL}?incidenciaId=${incidenciaId}`);
+  if (!response.ok) throw new Error("Error al obtener historial");
+  return response.json();
+};
+
+export const createHistorial = async (data) => {
+  const response = await fetch(HISTORIAL_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...data, fecha: new Date().toISOString() }),
+  });
+  if (!response.ok) throw new Error("Error al registrar en historial");
+  return response.json();
+};
+
+// --- TÉCNICOS ---
+const TECNICOS_URL = "http://localhost:3001/tecnicos";
+
+export const getTecnicos = async () => {
+  const response = await fetch(TECNICOS_URL);
+  if (!response.ok) throw new Error("Error al obtener técnicos");
+  return response.json();
+};
+
+export const getTecnicoById = async (id) => {
+  const response = await fetch(`${TECNICOS_URL}/${id}`);
+  if (!response.ok) throw new Error("Error al obtener técnico");
+  return response.json();
+};
+
+export const createTecnico = async (data) => {
+  const response = await fetch(TECNICOS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Error al crear técnico");
+  return response.json();
+};
+
+export const updateTecnico = async (id, data) => {
+  const response = await fetch(`${TECNICOS_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Error al actualizar técnico");
+  return response.json();
+};
+
+export const deleteTecnico = async (id) => {
+  const response = await fetch(`${TECNICOS_URL}/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) throw new Error("Error al eliminar técnico");
+  return response.json();
+};

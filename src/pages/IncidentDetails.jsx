@@ -1,37 +1,75 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getIncidentById, updateIncident, deleteIncident } from '../services/api';
+import { getIncidentById, updateIncident, deleteIncident, getTecnicos, createMantenimiento, createHistorial, getMantenimientos, getEquipos, updateEquipo } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
+import MaintenanceTracker from '../components/MaintenanceTracker';
+import IncidentHistory from '../components/IncidentHistory';
 
 function IncidentDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [incidencia, setIncidencia] = useState(null);
+  const [mantenimiento, setMantenimiento] = useState(null);
+  const [tecnicos, setTecnicos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const { user } = useContext(AuthContext);
 
+  const [assignForm, setAssignForm] = useState({ tecnicoId: '', fechaProgramada: '', prioridad: 'Media', tipoMantenimiento: 'Correctivo', observacionesIniciales: '' });
+  const [assignLoading, setAssignLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   useEffect(() => {
-    const fetchIncidencia = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
         const data = await getIncidentById(id);
         setIncidencia(data);
+
+        const mants = await getMantenimientos();
+        const mant = mants.find(m => m.incidenciaId === id);
+        if (mant) setMantenimiento(mant);
+
+        if (user.rol === 'administrador') {
+          const tecs = await getTecnicos();
+          setTecnicos(tecs);
+        }
       } catch (err) {
         setError('No se pudo encontrar la incidencia solicitada.');
       } finally {
         setLoading(false);
       }
     };
-    fetchIncidencia();
-  }, [id]);
+    fetchData();
+  }, [id, user.rol, refreshTrigger]);
+
+  const reloadData = () => setRefreshTrigger(prev => prev + 1);
 
   const handleChangeEstado = async (nuevoEstado) => {
     try {
       const updated = await updateIncident(id, { ...incidencia, estado: nuevoEstado });
+      await createHistorial({
+        incidenciaId: id,
+        usuario: user.nombre,
+        accion: `Cambió estado a ${nuevoEstado}`,
+        observacion: 'Cambio manual realizado por el administrador'
+      });
+      
+      // Update equipment status if closed
+      if (nuevoEstado === 'Cerrada') {
+        const equipos = await getEquipos();
+        const eq = equipos.find(e => e.codigoPatrimonial === incidencia.codigoEquipo);
+        if (eq) {
+          await updateEquipo(eq.id, { ...eq, estado: 'Operativo' });
+        }
+      }
+
       setIncidencia(updated);
-    } catch (err) {}
+      reloadData();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleDelete = async () => {
@@ -39,6 +77,54 @@ function IncidentDetails() {
       await deleteIncident(id);
       navigate('/incidencias');
     } catch (err) {}
+  };
+
+  const handleAssign = async (e) => {
+    e.preventDefault();
+    if (!assignForm.tecnicoId) {
+      alert('Debe seleccionar un técnico antes de asignar.');
+      return;
+    }
+    setAssignLoading(true);
+    try {
+      const tecSeleccionado = tecnicos.find(t => t.id === assignForm.tecnicoId);
+      const nombreTec = tecSeleccionado ? `${tecSeleccionado.nombres} ${tecSeleccionado.apellidos}` : assignForm.tecnicoId;
+
+      const newMant = await createMantenimiento({
+        incidenciaId: id,
+        equipoId: incidencia.equipoId || '',
+        tecnicoId: assignForm.tecnicoId,
+        nombreTecnico: nombreTec,
+        fechaProgramada: assignForm.fechaProgramada,
+        prioridad: assignForm.prioridad,
+        tipoMantenimiento: assignForm.tipoMantenimiento,
+        observacionesIniciales: assignForm.observacionesIniciales,
+        fechaInicio: '',
+        diagnostico: '',
+        actividades: '',
+        repuestos: '',
+        observacionesTecnico: '',
+        tiempoEmpleado: '',
+        fechaFin: ''
+      });
+      
+      const updated = await updateIncident(id, { ...incidencia, estado: 'Asignada' });
+      
+      await createHistorial({
+        incidenciaId: id,
+        usuario: user.nombre,
+        accion: 'Asignó técnico',
+        observacion: `Asignado a ${nombreTec} (${assignForm.tecnicoId})`
+      });
+
+      setIncidencia(updated);
+      setMantenimiento(newMant);
+      reloadData();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setAssignLoading(false);
+    }
   };
 
   const getPrioridadBadge = (p) => {
@@ -52,19 +138,19 @@ function IncidentDetails() {
 
   const getEstadoBadge = (e) => {
     switch(e) {
-      case 'Pendiente': return 'bg-danger';
-      case 'En proceso': return 'bg-warning text-dark';
-      case 'Resuelto': return 'bg-success';
+      case 'Reportada': return 'bg-danger';
+      case 'Revisada': return 'bg-warning text-dark';
+      case 'Asignada': return 'bg-primary';
+      case 'Reparada': return 'bg-success';
+      case 'Cerrada': return 'bg-secondary';
       default: return 'bg-secondary';
     }
   };
 
-  if (loading) {
+  if (loading && !incidencia) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
-        </div>
+        <div className="spinner-border text-primary" role="status"></div>
       </div>
     );
   }
@@ -91,13 +177,13 @@ function IncidentDetails() {
           <p className="text-muted mb-0">Información completa del reporte #{incidencia.id}</p>
         </div>
         <div>
-          <button className="btn btn-outline-secondary me-2 shadow-sm" onClick={() => navigate('/incidencias')}>
+          <button className="btn btn-outline-secondary me-2 shadow-sm" onClick={() => navigate(-1)}>
             <i className="bi bi-arrow-left me-1"></i> Volver
           </button>
         </div>
       </div>
 
-      <div className="card border-0 shadow-sm">
+      <div className="card border-0 shadow-sm mb-4">
         <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom-0">
           <h5 className="mb-0 fw-bold">
             <span className="text-primary me-3">{incidencia.codigoEquipo}</span>
@@ -107,9 +193,6 @@ function IncidentDetails() {
           <div className="btn-group">
             {user && user.rol === 'administrador' && (
               <>
-                <Link to={`/editar-incidencia/${incidencia.id}`} className="btn btn-outline-primary">
-                  <i className="bi bi-pencil me-1"></i> Editar
-                </Link>
                 <button className="btn btn-outline-danger" onClick={() => setShowConfirm(true)}>
                   <i className="bi bi-trash me-1"></i> Eliminar
                 </button>
@@ -166,33 +249,113 @@ function IncidentDetails() {
             </div>
           </div>
 
-          {user && user.rol === 'administrador' && (
+          {user && user.rol === 'administrador' && incidencia.estado !== 'Cerrada' && (
             <div className="mt-4 pt-4 border-top">
-              <h6 className="fw-bold mb-3 text-secondary text-uppercase" style={{fontSize: '0.8rem'}}><i className="bi bi-gear-fill me-2"></i>Gestión de Estado</h6>
+              <h6 className="fw-bold mb-3 text-secondary text-uppercase" style={{fontSize: '0.8rem'}}>
+                <i className="bi bi-gear-fill me-2"></i>Gestión de Estado
+              </h6>
               <div className="d-flex flex-wrap gap-2">
-                <button
-                  className={`btn ${incidencia.estado === 'Pendiente' ? 'btn-danger' : 'btn-outline-danger'}`}
-                  onClick={() => handleChangeEstado('Pendiente')}
-                >
-                  <i className="bi bi-hourglass-split me-1"></i> Pendiente
-                </button>
-                <button
-                  className={`btn ${incidencia.estado === 'En proceso' ? 'btn-warning' : 'btn-outline-warning text-dark'}`}
-                  onClick={() => handleChangeEstado('En proceso')}
-                >
-                  <i className="bi bi-tools me-1"></i> En Proceso
-                </button>
-                <button
-                  className={`btn ${incidencia.estado === 'Resuelto' ? 'btn-success' : 'btn-outline-success'}`}
-                  onClick={() => handleChangeEstado('Resuelto')}
-                >
-                  <i className="bi bi-check-circle me-1"></i> Resuelto
-                </button>
+                {incidencia.estado === 'Reportada' && (
+                  <button className="btn btn-info" onClick={() => handleChangeEstado('Revisada')}>
+                    <i className="bi bi-arrow-right me-1"></i>Marcar como Revisada
+                  </button>
+                )}
+                {incidencia.estado === 'Reparada' && (
+                  <button className="btn btn-secondary" onClick={() => handleChangeEstado('Cerrada')}>
+                    <i className="bi bi-check-lg me-1"></i>Cerrar Incidencia
+                  </button>
+                )}
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {user && user.rol === 'administrador' && !mantenimiento && incidencia.estado === 'Revisada' && (
+        <div className="card border-0 shadow-sm mb-4 border-top border-primary border-3">
+          <div className="card-header bg-white pt-3 pb-0 border-bottom-0">
+            <h5 className="fw-bold"><i className="bi bi-person-plus-fill me-2 text-primary"></i>Asignar Mantenimiento</h5>
+          </div>
+          <div className="card-body">
+            <form onSubmit={handleAssign}>
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Seleccionar Técnico</label>
+                  <select 
+                    className="form-select" 
+                    required
+                    value={assignForm.tecnicoId}
+                    onChange={(e) => setAssignForm({...assignForm, tecnicoId: e.target.value})}
+                  >
+                    <option value="">-- Elige un técnico --</option>
+                    {tecnicos.filter(t => t.estado === 'Activo').map(t => (
+                      <option key={t.id} value={t.id}>{t.nombres} {t.apellidos}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-semibold">Fecha Programada</label>
+                  <input 
+                    type="date" 
+                    className="form-control" 
+                    required
+                    value={assignForm.fechaProgramada}
+                    onChange={(e) => setAssignForm({...assignForm, fechaProgramada: e.target.value})}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-semibold">Prioridad Mantenimiento</label>
+                  <select 
+                    className="form-select"
+                    value={assignForm.prioridad}
+                    onChange={(e) => setAssignForm({...assignForm, prioridad: e.target.value})}
+                  >
+                    <option value="Baja">Baja</option>
+                    <option value="Media">Media</option>
+                    <option value="Alta">Alta</option>
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-semibold">Tipo Mantenimiento</label>
+                  <select 
+                    className="form-select"
+                    value={assignForm.tipoMantenimiento}
+                    onChange={(e) => setAssignForm({...assignForm, tipoMantenimiento: e.target.value})}
+                  >
+                    <option value="Preventivo">Preventivo</option>
+                    <option value="Correctivo">Correctivo</option>
+                  </select>
+                </div>
+                <div className="col-12">
+                  <label className="form-label fw-semibold">Observaciones Iniciales (Opcional)</label>
+                  <textarea 
+                    className="form-control" 
+                    rows="2"
+                    placeholder="Instrucciones para el técnico..."
+                    value={assignForm.observacionesIniciales}
+                    onChange={(e) => setAssignForm({...assignForm, observacionesIniciales: e.target.value})}
+                  ></textarea>
+                </div>
+                <div className="col-12 text-end">
+                  <button type="submit" className="btn btn-primary shadow-sm" disabled={assignLoading}>
+                    {assignLoading ? 'Asignando...' : 'Asignar Técnico y Programar'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {mantenimiento && (
+        <MaintenanceTracker 
+          mantenimiento={mantenimiento} 
+          incidencia={incidencia} 
+          onUpdate={reloadData}
+        />
+      )}
+
+      <IncidentHistory incidenciaId={id} key={`hist-${refreshTrigger}`} />
 
       {showConfirm && (
         <>

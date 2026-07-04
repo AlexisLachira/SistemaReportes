@@ -118,7 +118,7 @@ function EquipmentList() {
                   <th>Marca/Modelo</th>
                   <th>Laboratorio</th>
                   <th>Estado</th>
-                  {user?.rol === 'administrador' && <th className="text-end">Acciones</th>}
+                  <th className="text-end">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,16 +140,21 @@ function EquipmentList() {
                           {equipo.estado}
                         </span>
                       </td>
-                      {user?.rol === 'administrador' && (
-                        <td className="text-end">
-                          <Link to={`/editar-equipo/${equipo.id}`} className="btn btn-sm btn-outline-primary me-2">
-                            <i className="bi bi-pencil"></i>
-                          </Link>
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(equipo.id)}>
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </td>
-                      )}
+                      <td className="text-end">
+                        <Link to={`/equipo/${equipo.codigoPatrimonial}/historial`} className="btn btn-sm btn-outline-info me-2" title="Ver Historial">
+                          <i className="bi bi-clock-history"></i>
+                        </Link>
+                        {user?.rol === 'administrador' && (
+                          <>
+                            <Link to={`/editar-equipo/${equipo.id}`} className="btn btn-sm btn-outline-primary me-2" title="Editar">
+                              <i className="bi bi-pencil"></i>
+                            </Link>
+                            <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(equipo.id)} title="Eliminar">
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </>
+                        )}
+                      </td>
                     </tr>
                   ))
                 )}

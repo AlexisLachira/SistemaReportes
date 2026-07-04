@@ -17,15 +17,26 @@ export function AuthProvider({ children }) {
 
   const login = async (codigo, contrasena) => {
     try {
-      // Simular llamada a API para obtener usuarios
-      const response = await fetch('http://localhost:3001/usuarios');
-      const usuarios = await response.json();
+      // Simular llamada a API para obtener usuarios y tecnicos
+      const [responseUsu, responseTec] = await Promise.all([
+        fetch('http://localhost:3001/usuarios'),
+        fetch('http://localhost:3001/tecnicos')
+      ]);
+      const usuarios = await responseUsu.json();
+      const tecnicos = await responseTec.json();
       
-      const foundUser = usuarios.find(
+      const allUsers = [...usuarios, ...tecnicos];
+      
+      const foundUser = allUsers.find(
         (u) => u.codigo === codigo && u.contrasena === contrasena
       );
 
       if (foundUser) {
+        // Asegurarnos de que el técnico no puede iniciar sesión si está Inactivo
+        if (foundUser.rol === 'tecnico' && foundUser.estado === 'Inactivo') {
+          return { success: false, message: 'Cuenta de técnico inactiva' };
+        }
+        
         setUser(foundUser);
         localStorage.setItem('usuario', JSON.stringify(foundUser));
         return { success: true };

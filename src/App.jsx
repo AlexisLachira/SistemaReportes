@@ -10,6 +10,11 @@ import IncidentList from "./components/IncidentList";
 import Login from "./pages/Login";
 import Inventory from "./pages/Inventory";
 import NewEquipment from "./pages/NewEquipment";
+import MaintenanceManagement from "./pages/MaintenanceManagement";
+import MyMaintenances from "./pages/MyMaintenances";
+import Technicians from "./pages/Technicians";
+import NewTechnician from "./pages/NewTechnician";
+import EquipmentHistory from "./pages/EquipmentHistory";
 import { AuthProvider } from "./auth/AuthContext";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { RoleProtectedRoute } from "./auth/RoleProtectedRoute";
@@ -45,10 +50,18 @@ function AppContent() {
             <Route path="/incidencias/:id" element={<ProtectedRoute><IncidentDetails /></ProtectedRoute>} />
             <Route path="/editar-incidencia/:id" element={<RoleProtectedRoute rol="administrador"><NewIncident /></RoleProtectedRoute>} />
             
+            <Route path="/mantenimientos" element={<RoleProtectedRoute rol="administrador"><MaintenanceManagement /></RoleProtectedRoute>} />
+            <Route path="/mis-mantenimientos" element={<RoleProtectedRoute rol="tecnico"><MyMaintenances /></RoleProtectedRoute>} />
+
             <Route path="/inventario" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
             <Route path="/nuevo-equipo" element={<RoleProtectedRoute rol="administrador"><NewEquipment /></RoleProtectedRoute>} />
             <Route path="/editar-equipo/:id" element={<RoleProtectedRoute rol="administrador"><NewEquipment /></RoleProtectedRoute>} />
-
+            <Route path="/equipo/:codigo/historial" element={<ProtectedRoute><EquipmentHistory /></ProtectedRoute>} />
+            
+            <Route path="/tecnicos" element={<RoleProtectedRoute rol="administrador"><Technicians /></RoleProtectedRoute>} />
+            <Route path="/nuevo-tecnico" element={<RoleProtectedRoute rol="administrador"><NewTechnician /></RoleProtectedRoute>} />
+            <Route path="/editar-tecnico/:id" element={<RoleProtectedRoute rol="administrador"><NewTechnician /></RoleProtectedRoute>} />
+            
             <Route path="/reportes" element={<RoleProtectedRoute rol="administrador"><Reports /></RoleProtectedRoute>} />
           </Routes>
         </main>

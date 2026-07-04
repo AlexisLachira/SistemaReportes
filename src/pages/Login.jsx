@@ -18,8 +18,13 @@ function Login() {
       setError('Por favor, complete todos los campos');
       return;
     }
-    if (codigo !== 'admin' && !/^\d{9}$/.test(codigo)) {
-      setError('El código debe ser "admin" o tener exactamente 9 dígitos');
+    
+    const isAlumno = /^\d{9}$/.test(codigo);
+    const isAdmin = codigo === 'admin';
+    const isTecnico = /^TEC\d{3}$/.test(codigo);
+
+    if (!isAlumno && !isAdmin && !isTecnico) {
+      setError('El código ingresado no tiene un formato válido (Admin, Alumno 9 dígitos, o Técnico TECxxx)');
       return;
     }
 

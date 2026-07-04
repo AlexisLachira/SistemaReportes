@@ -1,177 +1,79 @@
 {
-  "incidencias": [
-    {
-      "id": "1",
-      "codigoEquipo": "PC-L1-05",
-      "tipoEquipo": "PC",
-      "laboratorio": "Laboratorio 1",
-      "descripcion": "No enciende al presionar el botón de encendido. Se verificó el cable de poder y está correctamente conectado.",
-      "fecha": "2025-06-01",
-      "reportante": "Juan Pérez",
-      "prioridad": "Alta",
-      "estado": "Resuelto"
-    },
-    {
-      "id": "2",
-      "codigoEquipo": "MON-L2-03",
-      "tipoEquipo": "Monitor",
-      "laboratorio": "Laboratorio 2",
-      "descripcion": "Pantalla parpadea constantemente después de 10 minutos de uso.",
-      "fecha": "2025-06-02",
-      "reportante": "María López",
-      "prioridad": "Media",
-      "estado": "En proceso"
-    },
-    {
-      "id": "3",
-      "codigoEquipo": "IMP-ADM-01",
-      "tipoEquipo": "Impresora",
-      "laboratorio": "Administración",
-      "descripcion": "No reconoce el cartucho de tinta nuevo. Muestra error de cartucho incompatible.",
-      "fecha": "2025-05-28",
-      "reportante": "Carlos Ruiz",
-      "prioridad": "Baja",
-      "estado": "Resuelto"
-    },
-    {
-      "id": "4",
-      "codigoEquipo": "PC-L3-12",
-      "tipoEquipo": "PC",
-      "laboratorio": "Laboratorio 3",
-      "descripcion": "El equipo se reinicia aleatoriamente durante las prácticas de laboratorio.",
-      "fecha": "2025-06-03",
-      "reportante": "Ana García",
-      "prioridad": "Alta",
-      "estado": "Pendiente"
-    },
-    {
-      "id": "5",
-      "codigoEquipo": "TEC-L1-08",
-      "tipoEquipo": "Teclado",
-      "laboratorio": "Laboratorio 1",
-      "descripcion": "Varias teclas no responden: Enter, Shift derecho y teclas de función F1-F4.",
-      "fecha": "2025-06-04",
-      "reportante": "Pedro Sánchez",
-      "prioridad": "Baja",
-      "estado": "Resuelto"
-    },
-    {
-      "id": "6",
-      "codigoEquipo": "PROY-L4-01",
-      "tipoEquipo": "Proyector",
-      "laboratorio": "Laboratorio 4",
-      "descripcion": "La imagen proyectada se ve borrosa y con colores distorsionados.",
-      "fecha": "2025-06-05",
-      "reportante": "Dra. Fernanda Torres",
-      "prioridad": "Alta",
-      "estado": "En proceso"
-    },
-    {
-      "id": "7",
-      "codigoEquipo": "PC-L2-01",
-      "tipoEquipo": "PC",
-      "laboratorio": "Laboratorio 2",
-      "descripcion": "Disco duro hace ruidos extraños y el sistema operativo tarda más de 15 minutos en arrancar.",
-      "fecha": "2025-06-06",
-      "reportante": "Luis Mendoza",
-      "prioridad": "Alta",
-      "estado": "Pendiente"
-    },
-    {
-      "id": "8",
-      "codigoEquipo": "MOUSE-L3-07",
-      "tipoEquipo": "Mouse",
-      "laboratorio": "Laboratorio 3",
-      "descripcion": "El cursor se mueve erráticamente. Se probó en otro puerto USB y persiste el problema.",
-      "fecha": "2025-06-07",
-      "reportante": "Rosa Martínez",
-      "prioridad": "Baja",
-      "estado": "Pendiente"
-    },
-    {
-      "id": "9",
-      "codigoEquipo": "MON-L4-05",
-      "tipoEquipo": "Monitor",
-      "laboratorio": "Laboratorio 4",
-      "descripcion": "Líneas verticales en la pantalla. Posible fallo en el cable VGA o en el panel.",
-      "fecha": "2025-06-08",
-      "reportante": "Ing. Roberto Campos",
-      "prioridad": "Media",
-      "estado": "En proceso"
-    },
-    {
-      "id": "10",
-      "codigoEquipo": "PC-L1-15",
-      "tipoEquipo": "PC",
-      "laboratorio": "Laboratorio 1",
-      "descripcion": "No detecta la tarjeta de red. Imposible conectarse a internet para las prácticas.",
-      "fecha": "2025-06-09",
-      "reportante": "Sofía Herrera",
-      "prioridad": "Media",
-      "estado": "Pendiente"
-    },
-    {
-      "codigoEquipo": "PC-L3-42",
-      "tipoEquipo": "PC",
-      "laboratorio": "Laboratorio 3",
-      "descripcion": "La PC hace un ruido extraño",
-      "fecha": "2026-06-16",
-      "reportante": "Manuel Lachira",
-      "prioridad": "Media",
-      "estado": "Pendiente",
-      "id": "e8NzAx52d3w"
-    },
-    {
-      "codigoEquipo": "PC-L1-05",
-      "tipoEquipo": "Monitor",
-      "laboratorio": "Laboratorio 1",
-      "descripcion": "La pantalla tiene quemaduras de leds",
-      "fecha": "2026-06-22",
-      "reportante": "202300001",
-      "prioridad": "Alta",
-      "estado": "Resuelto",
-      "id": "WIBedfI2zx4"
-    },
-    {
-      "codigoEquipo": "PC-L3-42",
-      "tipoEquipo": "Mouse",
-      "laboratorio": "Laboratorio 3",
-      "descripcion": "Se lo robaron chamo",
-      "fecha": "2026-06-22",
-      "reportante": "202300001",
-      "prioridad": "Media",
-      "estado": "Pendiente",
-      "id": "eYhmNWAwh2c"
-    }
-  ],
   "usuarios": [
     {
       "id": "admin",
       "codigo": "admin",
       "contrasena": "admin123",
       "rol": "administrador",
-      "nombre": "Administrador"
+      "nombre": "Administrador Principal"
     },
     {
       "id": "202300001",
       "codigo": "202300001",
       "contrasena": "alumno123",
       "rol": "alumno",
-      "nombre": "Alumno 202300001"
+      "nombre": "Manuel Alexis Lachira"
     },
     {
       "id": "202300002",
       "codigo": "202300002",
       "contrasena": "alumno123",
       "rol": "alumno",
-      "nombre": "Alumno 202300002"
+      "nombre": "María López Vargas"
     },
     {
-      "id": "051202329",
-      "codigo": "051202329",
-      "contrasena": "alexis123",
+      "id": "202400003",
+      "codigo": "202400003",
+      "contrasena": "alumno123",
       "rol": "alumno",
-      "nombre": "Manuel Alexis Lachira Iman"
+      "nombre": "Carlos Ruiz Gómez"
+    }
+  ],
+  "tecnicos": [
+    {
+      "id": "TEC001",
+      "codigo": "TEC001",
+      "contrasena": "tec123",
+      "rol": "tecnico",
+      "nombre": "Juan Pablo Pérez Torres",
+      "dni": "71234567",
+      "nombres": "Juan Pablo",
+      "apellidos": "Pérez Torres",
+      "especialidad": "Hardware y Redes",
+      "telefono": "987654321",
+      "correo": "jperez@unp.edu",
+      "estado": "Activo",
+      "fechaIngreso": "2024-01-15"
+    },
+    {
+      "id": "TEC002",
+      "codigo": "TEC002",
+      "contrasena": "tec123",
+      "rol": "tecnico",
+      "nombre": "Ana Paula García Soto",
+      "dni": "72345678",
+      "nombres": "Ana Paula",
+      "apellidos": "García Soto",
+      "especialidad": "Software y Sistemas",
+      "telefono": "912345678",
+      "correo": "agarcia@unp.edu",
+      "estado": "Activo",
+      "fechaIngreso": "2024-03-10"
+    },
+    {
+      "id": "TEC003",
+      "codigo": "TEC003",
+      "contrasena": "tec123",
+      "rol": "tecnico",
+      "nombre": "Roberto Campos Flores",
+      "dni": "73456789",
+      "nombres": "Roberto",
+      "apellidos": "Campos Flores",
+      "especialidad": "Electrónica",
+      "telefono": "923456789",
+      "correo": "rcampos@unp.edu",
+      "estado": "Inactivo",
+      "fechaIngreso": "2023-11-05"
     }
   ],
   "equipos": [
@@ -185,7 +87,7 @@
       "laboratorio": "Laboratorio 1",
       "estado": "Operativo",
       "fechaAdquisicion": "2023-01-15",
-      "observaciones": "Equipo de profesor"
+      "observaciones": ""
     },
     {
       "id": "2",
@@ -201,18 +103,6 @@
     },
     {
       "id": "3",
-      "codigoPatrimonial": "PC-LAB01-003",
-      "numeroSerie": "SN-PC01003",
-      "tipoEquipo": "PC",
-      "marca": "Dell",
-      "modelo": "OptiPlex 7090",
-      "laboratorio": "Laboratorio 1",
-      "estado": "Averiado",
-      "fechaAdquisicion": "2023-01-15",
-      "observaciones": "No enciende"
-    },
-    {
-      "id": "4",
       "codigoPatrimonial": "MON-LAB01-001",
       "numeroSerie": "SN-MON01001",
       "tipoEquipo": "Monitor",
@@ -221,139 +111,234 @@
       "laboratorio": "Laboratorio 1",
       "estado": "Operativo",
       "fechaAdquisicion": "2023-01-20",
-      "observaciones": ""
+      "observaciones": "Pantalla parpadea"
     },
     {
-      "id": "5",
+      "id": "4",
       "codigoPatrimonial": "PC-LAB02-001",
       "numeroSerie": "SN-PC02001",
       "tipoEquipo": "PC",
       "marca": "HP",
       "modelo": "ProDesk 400",
       "laboratorio": "Laboratorio 2",
-      "estado": "Operativo",
+      "estado": "En mantenimiento",
       "fechaAdquisicion": "2022-05-10",
+      "observaciones": "Posible fallo de disco duro"
+    },
+    {
+      "id": "5",
+      "codigoPatrimonial": "IMP-ADM-01",
+      "numeroSerie": "SN-IMP001",
+      "tipoEquipo": "Impresora",
+      "marca": "Epson",
+      "modelo": "L3250",
+      "laboratorio": "Administración",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2024-02-15",
       "observaciones": ""
     },
     {
       "id": "6",
-      "codigoPatrimonial": "PC-LAB02-002",
-      "numeroSerie": "SN-PC02002",
+      "codigoPatrimonial": "PROY-LAB03-01",
+      "numeroSerie": "SN-PROY001",
+      "tipoEquipo": "Proyector",
+      "marca": "Epson",
+      "modelo": "PowerLite E20",
+      "laboratorio": "Laboratorio 3",
+      "estado": "Operativo",
+      "fechaAdquisicion": "2023-08-10",
+      "observaciones": ""
+    }
+  ],
+  "incidencias": [
+    {
+      "id": "1",
+      "codigoEquipo": "PC-LAB01-001",
       "tipoEquipo": "PC",
-      "marca": "HP",
-      "modelo": "ProDesk 400",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "El equipo no enciende al presionar el botón de encendido.",
+      "fecha": "2025-06-01",
+      "reportante": "202300001",
+      "prioridad": "Alta",
+      "estado": "Cerrada"
+    },
+    {
+      "id": "2",
+      "codigoEquipo": "MON-LAB01-001",
+      "tipoEquipo": "Monitor",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "La pantalla parpadea constantemente después de 10 minutos de uso.",
+      "fecha": "2025-06-15",
+      "reportante": "202300002",
+      "prioridad": "Media",
+      "estado": "Cerrada"
+    },
+    {
+      "id": "3",
+      "codigoEquipo": "PC-LAB02-001",
+      "tipoEquipo": "PC",
       "laboratorio": "Laboratorio 2",
-      "estado": "En mantenimiento",
-      "fechaAdquisicion": "2022-05-10",
-      "observaciones": "Cambio de pasta térmica"
+      "descripcion": "El disco duro hace un ruido extraño y el sistema se congela frecuentemente.",
+      "fecha": "2025-06-20",
+      "reportante": "202400003",
+      "prioridad": "Alta",
+      "estado": "Asignada"
+    }
+  ],
+  "mantenimientos": [
+    {
+      "id": "1",
+      "incidenciaId": "1",
+      "equipoId": "1",
+      "tecnicoId": "TEC001",
+      "tipoMantenimiento": "Correctivo",
+      "fechaProgramada": "2025-06-02",
+      "fechaInicio": "2025-06-02",
+      "fechaFin": "2025-06-03",
+      "diagnostico": "Fuente de poder quemada",
+      "actividades": "Reemplazo de fuente de poder genérica por una certificada 80 Plus",
+      "repuestos": "Fuente de poder 600W",
+      "observacionesTecnico": "Se limpiaron los ventiladores también.",
+      "observacionesIniciales": "Verificar fuente de alimentación"
+    },
+    {
+      "id": "2",
+      "incidenciaId": "3",
+      "equipoId": "4",
+      "tecnicoId": "TEC002",
+      "tipoMantenimiento": "Correctivo",
+      "fechaProgramada": "2025-06-22",
+      "fechaInicio": "",
+      "fechaFin": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "observacionesIniciales": "Revisar estado del disco duro"
+    },
+    {
+      "incidenciaId": "2",
+      "equipoId": "",
+      "tecnicoId": "TEC001",
+      "nombreTecnico": "Juan Pablo Pérez Torres",
+      "fechaProgramada": "2026-07-04",
+      "prioridad": "Media",
+      "tipoMantenimiento": "Correctivo",
+      "observacionesIniciales": "",
+      "fechaInicio": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "tiempoEmpleado": "",
+      "fechaFin": "2026-07-04",
+      "id": "Un6AFsUNXlI"
+    }
+  ],
+  "historialIncidencias": [
+    {
+      "id": "1",
+      "incidenciaId": "1",
+      "fecha": "2025-06-01T10:00:00.000Z",
+      "usuario": "Manuel Alexis Lachira",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada"
+    },
+    {
+      "id": "2",
+      "incidenciaId": "1",
+      "fecha": "2025-06-01T14:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Incidencia revisada por el administrador"
+    },
+    {
+      "id": "3",
+      "incidenciaId": "1",
+      "fecha": "2025-06-02T08:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)"
+    },
+    {
+      "id": "4",
+      "incidenciaId": "1",
+      "fecha": "2025-06-03T15:00:00.000Z",
+      "usuario": "Juan Pablo Pérez Torres",
+      "accion": "Cambió estado a Reparada",
+      "observacion": "Diagnóstico: Fuente de poder quemada. Reemplazo realizado."
+    },
+    {
+      "id": "5",
+      "incidenciaId": "1",
+      "fecha": "2025-06-03T16:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Cerrada",
+      "observacion": "Equipo restaurado y verificado operativo"
+    },
+    {
+      "id": "6",
+      "incidenciaId": "2",
+      "fecha": "2025-06-15T09:30:00.000Z",
+      "usuario": "María López Vargas",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada"
     },
     {
       "id": "7",
-      "codigoPatrimonial": "PROY-LAB02-001",
-      "numeroSerie": "SN-PRJ02001",
-      "tipoEquipo": "Proyector",
-      "marca": "Epson",
-      "modelo": "PowerLite 119W",
-      "laboratorio": "Laboratorio 2",
-      "estado": "Operativo",
-      "fechaAdquisicion": "2022-06-01",
-      "observaciones": ""
+      "incidenciaId": "3",
+      "fecha": "2025-06-20T14:15:00.000Z",
+      "usuario": "Carlos Ruiz Gómez",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada"
     },
     {
       "id": "8",
-      "codigoPatrimonial": "SW-LAB02-001",
-      "numeroSerie": "SN-SW02001",
-      "tipoEquipo": "Switch",
-      "marca": "Cisco",
-      "modelo": "Catalyst 2960-X",
-      "laboratorio": "Laboratorio 2",
-      "estado": "Operativo",
-      "fechaAdquisicion": "2021-08-15",
-      "observaciones": "Switch principal Lab 2"
+      "incidenciaId": "3",
+      "fecha": "2025-06-20T16:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Incidencia revisada"
     },
     {
       "id": "9",
-      "codigoPatrimonial": "PC-LAB03-001",
-      "numeroSerie": "SN-PC03001",
-      "tipoEquipo": "PC",
-      "marca": "Lenovo",
-      "modelo": "ThinkCentre M70",
-      "laboratorio": "Laboratorio 3",
-      "estado": "Operativo",
-      "fechaAdquisicion": "2024-02-10",
-      "observaciones": ""
+      "incidenciaId": "3",
+      "fecha": "2025-06-21T08:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Ana Paula García Soto (TEC002)"
     },
     {
-      "id": "10",
-      "codigoPatrimonial": "PC-LAB03-002",
-      "numeroSerie": "SN-PC03002",
-      "tipoEquipo": "PC",
-      "marca": "Lenovo",
-      "modelo": "ThinkCentre M70",
-      "laboratorio": "Laboratorio 3",
-      "estado": "Fuera de servicio",
-      "fechaAdquisicion": "2024-02-10",
-      "observaciones": "Placa madre dañada irremediablemente"
+      "incidenciaId": "2",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-04T23:04:03.967Z",
+      "id": "iZdByzYcBv0"
     },
     {
-      "id": "11",
-      "codigoPatrimonial": "IMP-ADM-001",
-      "numeroSerie": "SN-IMP001",
-      "tipoEquipo": "Impresora",
-      "marca": "HP",
-      "modelo": "LaserJet Pro",
-      "laboratorio": "Administración",
-      "estado": "Operativo",
-      "fechaAdquisicion": "2021-03-22",
-      "observaciones": ""
+      "incidenciaId": "2",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
+      "fecha": "2026-07-04T23:04:24.112Z",
+      "id": "d2Fgo8vSjLk"
     },
     {
-      "id": "12",
-      "codigoPatrimonial": "RT-ADM-001",
-      "numeroSerie": "SN-RT001",
-      "tipoEquipo": "Router",
-      "marca": "MikroTik",
-      "modelo": "RB2011",
-      "laboratorio": "Administración",
-      "estado": "Operativo",
-      "fechaAdquisicion": "2020-11-05",
-      "observaciones": "Router principal"
+      "incidenciaId": "2",
+      "usuario": "Juan Pablo Pérez Torres",
+      "accion": "Finalizó mantenimiento",
+      "observacion": "El técnico marcó la incidencia como Reparada",
+      "fecha": "2026-07-04T23:13:44.264Z",
+      "id": "uUdpsTxH4bg"
     },
     {
-      "id": "13",
-      "codigoPatrimonial": "PC-LAB04-001",
-      "numeroSerie": "SN-PC04001",
-      "tipoEquipo": "PC",
-      "marca": "Asus",
-      "modelo": "ExpertCenter",
-      "laboratorio": "Laboratorio 4",
-      "estado": "Operativo",
-      "fechaAdquisicion": "2023-09-12",
-      "observaciones": ""
-    },
-    {
-      "id": "14",
-      "codigoPatrimonial": "MON-LAB04-001",
-      "numeroSerie": "SN-MON04001",
-      "tipoEquipo": "Monitor",
-      "marca": "LG",
-      "modelo": "24MP60G",
-      "laboratorio": "Laboratorio 4",
-      "estado": "Averiado",
-      "fechaAdquisicion": "2023-09-15",
-      "observaciones": "Pantalla con líneas verticales"
-    },
-    {
-      "id": "15",
-      "codigoPatrimonial": "PC-LAB04-002",
-      "numeroSerie": "SN-PC04002",
-      "tipoEquipo": "PC",
-      "marca": "Asus",
-      "modelo": "ExpertCenter",
-      "laboratorio": "Laboratorio 4",
-      "estado": "En mantenimiento",
-      "fechaAdquisicion": "2023-09-12",
-      "observaciones": "Actualización de RAM"
+      "incidenciaId": "2",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Cerrada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-04T23:14:05.592Z",
+      "id": "PP8_cncH2Tg"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
