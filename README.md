@@ -4,7 +4,7 @@ Aplicación web académica desarrollada en **React** para la **Escuela Profesion
 
 El sistema permite gestionar de manera integral las incidencias y reportes de equipos informáticos dañados en los diferentes laboratorios de cómputo, facilitando la comunicación entre alumnos, administradores y el equipo de soporte técnico.
 
-## 🚀 Características Principales
+##  Características Principales
 
 * **Roles de Usuario**:
   * **Administrador**: Control total. Puede ver todas las incidencias, gestionar el inventario de equipos, asignar técnicos, auditar el historial y acceder al centro de monitoreo (Dashboard) y reportes exportables.
@@ -16,7 +16,7 @@ El sistema permite gestionar de manera integral las incidencias y reportes de eq
 * **Módulo de Reportes Profesionales**: Filtros avanzados y generación de reportes exportables a formatos **PDF** y **Excel**.
 * **Gestión de Inventario**: Administración completa del hardware patrimonial de los laboratorios.
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 * **React v19+** (Vite)
 * **React Router v7** (Para la navegación y protección de rutas)
@@ -24,7 +24,7 @@ El sistema permite gestionar de manera integral las incidencias y reportes de eq
 * **JSON Server** (API REST local completa)
 * **Bootstrap 5 & Vanilla CSS** (Diseño moderno, utilidades responsive y layouts fluidos)
 
-## 📦 Instalación y Configuración Local
+##  Instalación y Configuración Local
 
 1. Clona el repositorio:
    ```bash
@@ -49,7 +49,7 @@ El sistema permite gestionar de manera integral las incidencias y reportes de eq
    ```
    *La aplicación estará disponible en `http://localhost:5173` (o el puerto que indique Vite)*
 
-## 🔐 Usuarios de Prueba (Login)
+## Usuarios de Prueba (Login)
 
 Para explorar los distintos roles de la aplicación, puedes usar las siguientes credenciales:
 
@@ -61,7 +61,7 @@ Para explorar los distintos roles de la aplicación, puedes usar las siguientes 
 | **Alumno 1** | `202300001` | `alumno123` |
 | **Alumno 2** | `202300002` | `alumno123` |
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```text
 src/

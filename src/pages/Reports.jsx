@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext, useMemo } from 'react';
 import { getIncidents, getEquipos, getMantenimientos, getTecnicos } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
 function Reports() {
@@ -115,7 +115,7 @@ function Reports() {
       
       if (mant) {
         const t = tecnicos.find(t => t.id === mant.tecnicoId);
-        if (t) tecNombre = t.nombre;
+        if (t) tecNombre = `${t.nombres} ${t.apellidos}`;
         
         if (mant.fechaInicio && mant.fechaFin) {
           const diffTime = Math.abs(new Date(mant.fechaFin) - new Date(mant.fechaInicio));
@@ -137,7 +137,7 @@ function Reports() {
       ];
     });
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: 42,
       head: [['Código', 'Equipo', 'Lab', 'Alumno', 'Técnico', 'Prioridad', 'Estado', 'F. Registro', 'F. Cierre', 'T. Res.']],
       body: tableData,
@@ -151,7 +151,8 @@ function Reports() {
   const handleExportIncidenciasExcel = () => {
     const data = filteredIncidencias.map(inc => {
       const mant = mantenimientos.find(m => m.incidenciaId === inc.id);
-      const tecNombre = mant ? (tecnicos.find(t => t.id === mant.tecnicoId)?.nombre || 'Desconocido') : 'No asignado';
+      const t = mant ? tecnicos.find(t => t.id === mant.tecnicoId) : null;
+      const tecNombre = t ? `${t.nombres} ${t.apellidos}` : 'No asignado';
       let tiempoRes = 'N/A';
       if (mant?.fechaInicio && mant?.fechaFin) {
         const diffDays = Math.ceil(Math.abs(new Date(mant.fechaFin) - new Date(mant.fechaInicio)) / (1000 * 60 * 60 * 24));
@@ -202,12 +203,12 @@ function Reports() {
     const doc = new jsPDF('landscape');
     addPdfHeader(doc, "Reporte de Equipos");
     const body = equiposData.map(e => Object.values(e));
-    doc.autoTable({
+    autoTable(doc, {
       startY: 42,
-      head: [Object.keys(equiposData[0] || {})],
+      head: [['Código Patrimonial', 'Tipo', 'Marca', 'Modelo', 'Laboratorio', 'Estado']],
       body: body,
       theme: 'grid',
-      styles: { fontSize: 8 }
+      styles: { fontSize: 9 }
     });
     addPdfPagination(doc);
     doc.save('Reporte_Equipos.pdf');
@@ -247,7 +248,7 @@ function Reports() {
   const handleExportTecnicosPDF = () => {
     const doc = new jsPDF();
     addPdfHeader(doc, "Reporte de Desempeño de Técnicos");
-    doc.autoTable({
+    autoTable(doc, {
       startY: 42,
       head: [Object.keys(tecnicosData[0] || {})],
       body: tecnicosData.map(t => Object.values(t)),
@@ -284,7 +285,7 @@ function Reports() {
   const handleExportLabsPDF = () => {
     const doc = new jsPDF();
     addPdfHeader(doc, "Reporte por Laboratorios");
-    doc.autoTable({ startY: 42, head: [Object.keys(labData[0] || {})], body: labData.map(l => Object.values(l)), theme: 'grid' });
+    autoTable(doc, { startY: 42, head: [Object.keys(labData[0] || {})], body: labData.map(l => Object.values(l)), theme: 'grid' });
     addPdfPagination(doc);
     doc.save('Reporte_Laboratorios.pdf');
   };
@@ -315,7 +316,7 @@ function Reports() {
     // Tabla de indicadores
     doc.setFont("helvetica", "bold");
     doc.text("2. Indicadores Principales", 14, 75);
-    doc.autoTable({
+    autoTable(doc, {
       startY: 80,
       head: [['Métrica', 'Valor']],
       body: [

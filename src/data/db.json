@@ -85,7 +85,7 @@
       "marca": "Dell",
       "modelo": "OptiPlex 7090",
       "laboratorio": "Laboratorio 1",
-      "estado": "Averiado",
+      "estado": "Operativo",
       "fechaAdquisicion": "2023-01-15",
       "observaciones": ""
     },
@@ -193,7 +193,7 @@
       "fecha": "2026-07-04",
       "reportante": "Administrador Principal",
       "prioridad": "Baja",
-      "estado": "Asignada",
+      "estado": "Cerrada",
       "id": "aocKkbL9gE0"
     },
     {
@@ -207,6 +207,18 @@
       "prioridad": "Alta",
       "estado": "Revisada",
       "id": "ajBXnyzY88k"
+    },
+    {
+      "codigoEquipo": "PC-LAB01-001",
+      "equipoId": "1",
+      "tipoEquipo": "PC",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "Se siente un olor a humo o quemado.",
+      "fecha": "2026-07-05",
+      "reportante": "Manuel Alexis Lachira",
+      "prioridad": "Alta",
+      "estado": "Asignada",
+      "id": "giLOQUgKuHk"
     }
   ],
   "mantenimientos": [
@@ -273,8 +285,26 @@
       "repuestos": "",
       "observacionesTecnico": "",
       "tiempoEmpleado": "",
-      "fechaFin": "",
+      "fechaFin": "2026-07-05",
       "id": "kEFvMWKMc3M"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "equipoId": "1",
+      "tecnicoId": "TEC001",
+      "nombreTecnico": "Juan Pablo Pérez Torres",
+      "fechaProgramada": "2026-07-07",
+      "prioridad": "Media",
+      "tipoMantenimiento": "Preventivo",
+      "observacionesIniciales": "",
+      "fechaInicio": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "tiempoEmpleado": "",
+      "fechaFin": "",
+      "id": "8M8p2HV7QFM"
     }
   ],
   "historialIncidencias": [
@@ -429,6 +459,46 @@
       "observacion": "Cambio manual realizado por el administrador",
       "fecha": "2026-07-04T23:41:18.015Z",
       "id": "2e2aWPDpPyU"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "usuario": "Manuel Alexis Lachira",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada",
+      "fecha": "2026-07-05T23:43:28.035Z",
+      "id": "ulozxQ0eQmE"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-05T23:48:36.855Z",
+      "id": "IhXm58BoItc"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
+      "fecha": "2026-07-05T23:48:43.840Z",
+      "id": "B265zhdO1UI"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Juan Pablo Pérez Torres",
+      "accion": "Finalizó mantenimiento",
+      "observacion": "El técnico marcó la incidencia como Reparada",
+      "fecha": "2026-07-05T23:51:48.522Z",
+      "id": "xdbRmNCZZ_0"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Cerrada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-06T00:01:53.755Z",
+      "id": "j9BHrka1k8A"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
