@@ -6,7 +6,7 @@
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 const API_URL = `${BASE_URL}/incidencias`;
 
-/**
+/** 
  * Obtener todas las incidencias
  * @returns {Promise<Array>} Lista de incidencias
  */
@@ -166,6 +166,15 @@ export const createHistorial = async (data) => {
     body: JSON.stringify({ ...data, fecha: new Date().toISOString() }),
   });
   if (!response.ok) throw new Error("Error al registrar en historial");
+  return response.json();
+};
+
+// --- USUARIOS ---
+const USUARIOS_URL = `${BASE_URL}/usuarios`;
+
+export const getUsuarios = async () => {
+  const response = await fetch(USUARIOS_URL);
+  if (!response.ok) throw new Error("Error al obtener usuarios");
   return response.json();
 };
 

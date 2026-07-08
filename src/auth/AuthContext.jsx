@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
+import { getUsuarios, getTecnicos } from '../services/api';
 
 export const AuthContext = createContext();
 
@@ -17,13 +18,10 @@ export function AuthProvider({ children }) {
 
   const login = async (codigo, contrasena) => {
     try {
-      // Simular llamada a API para obtener usuarios y tecnicos
-      const [responseUsu, responseTec] = await Promise.all([
-        fetch('http://localhost:3001/usuarios'),
-        fetch('http://localhost:3001/tecnicos')
+      const [usuarios, tecnicos] = await Promise.all([
+        getUsuarios(),
+        getTecnicos()
       ]);
-      const usuarios = await responseUsu.json();
-      const tecnicos = await responseTec.json();
       
       const allUsers = [...usuarios, ...tecnicos];
       
