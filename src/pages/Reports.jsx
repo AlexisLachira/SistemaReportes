@@ -274,8 +274,8 @@ function Reports() {
       return {
         Laboratorio: lab,
         'Total Equipos': eqLab.length,
-        'Operativos': eqLab.filter(e => e.estado === 'Operativo').length,
-        'Averiados': eqLab.filter(e => e.estado !== 'Operativo').length,
+        'Operativos': eqLab.filter(e => e.estado === 'Disponible').length,
+        'Dañados': eqLab.filter(e => e.estado !== 'Disponible').length,
         'Incidencias Registradas': incLab.length,
         'Mantenimientos Realizados': mantsLab.length
       };
@@ -311,7 +311,7 @@ function Reports() {
     
     doc.text(`Durante el periodo analizado, el sistema registra un total de ${incidencias.length} incidencias,`, 14, 52);
     doc.text(`de las cuales el ${tasa}% han sido resueltas. El inventario consta de ${equipos.length} equipos,`, 14, 57);
-    doc.text(`con ${equipos.filter(e => e.estado !== 'Operativo').length} actualmente averiados o en mantenimiento.`, 14, 62);
+    doc.text(`con ${equipos.filter(e => e.estado !== 'Disponible').length} actualmente dañados, retirados o en mantenimiento.`, 14, 62);
 
     // Tabla de indicadores
     doc.setFont("helvetica", "bold");
@@ -321,7 +321,7 @@ function Reports() {
       head: [['Métrica', 'Valor']],
       body: [
         ['Total de Equipos', equipos.length],
-        ['Equipos Operativos', equipos.filter(e => e.estado === 'Operativo').length],
+        ['Equipos Operativos', equipos.filter(e => e.estado === 'Disponible').length],
         ['Total de Incidencias', incidencias.length],
         ['Incidencias Pendientes / En Proceso', incidencias.length - resueltas.length],
         ['Técnicos Activos', tecnicos.length],
@@ -337,9 +337,9 @@ function Reports() {
     doc.text("3. Conclusiones y Diagnóstico", 14, finalY);
     
     doc.setFont("helvetica", "normal");
-    const peorLab = [...labData].sort((a,b) => b.Averiados - a.Averiados)[0];
+    const peorLab = [...labData].sort((a,b) => b.Dañados - a.Dañados)[0];
     let conclusion = `• El laboratorio que requiere mayor atención es ${peorLab ? peorLab.Laboratorio : 'N/A'}, ya que `;
-    conclusion += `presenta ${peorLab ? peorLab.Averiados : 0} equipos averiados.\n`;
+    conclusion += `presenta ${peorLab ? peorLab.Dañados : 0} equipos con problemas.\n`;
     if (tasa < 50) {
       conclusion += "• La tasa de resolución actual es baja, lo que indica un cuello de botella en la atención de mantenimientos.\n";
     } else {

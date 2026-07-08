@@ -48,8 +48,20 @@ function IncidentList() {
     }
     if (filtros.laboratorio) resultado = resultado.filter(i => i.laboratorio === filtros.laboratorio);
     if (filtros.prioridad) resultado = resultado.filter(i => i.prioridad === filtros.prioridad);
-    if (filtros.estado) resultado = resultado.filter(i => i.estado === filtros.estado);
+    if (filtros.estado) {
+      resultado = resultado.filter(i => i.estado === filtros.estado);
+    } else {
+      resultado = resultado.filter(i => i.estado !== 'Cerrada');
+    }
     
+    // Sort by most recent first (using id descending as proxy for recency, or date)
+    resultado.sort((a, b) => {
+      const dateA = new Date(a.fecha).getTime();
+      const dateB = new Date(b.fecha).getTime();
+      if (dateA === dateB) return parseInt(b.id) - parseInt(a.id);
+      return dateB - dateA;
+    });
+
     console.log(`=== DEBUG: FILTRO APLICADO ===\nTotal en db.json (original): ${incidencias.length}\nTotal después del filtro (UI): ${resultado.length}`);
     resultado.forEach(inc => {
       console.log(`[FILTRADA UI] ID: ${inc.id} | Estado a mostrar: ${inc.estado}`);
@@ -81,14 +93,15 @@ function IncidentList() {
     } catch (error) {}
   };
 
-  const getPrioridadBadge = (prioridad) => {
-    switch(prioridad) {
-      case 'Alta': return 'bg-danger';
-      case 'Media': return 'bg-warning text-dark';
-      case 'Baja': return 'bg-info text-dark';
-      default: return 'bg-secondary';
-    }
-  };
+    const getPrioridadBadge = (prioridad) => {
+      switch(prioridad) {
+        case 'Crítica': return 'bg-dark text-white';
+        case 'Alta': return 'bg-danger';
+        case 'Media': return 'bg-warning text-dark';
+        case 'Baja': return 'bg-success';
+        default: return 'bg-secondary';
+      }
+    };
 
   const getEstadoBadge = (estado) => {
     switch(estado) {

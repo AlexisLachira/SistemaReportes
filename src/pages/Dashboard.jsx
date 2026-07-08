@@ -62,7 +62,7 @@ function Dashboard() {
   
   // Admin Métricas extras
   const incidenciasAbiertas = incidencias.filter(i => i.estado !== 'Cerrada').length;
-  const incidenciasCriticas = incidencias.filter(i => i.prioridad === 'Alta' && i.estado !== 'Cerrada').length;
+  const incidenciasCriticas = incidencias.filter(i => (i.prioridad === 'Alta' || i.prioridad === 'Crítica') && i.estado !== 'Cerrada').length;
   const mantsEnProcesoGlobal = mantenimientos.filter(m => m.fechaInicio && !m.fechaFin).length;
 
   // Técnicos stats
@@ -103,8 +103,8 @@ function Dashboard() {
 
   // Equipos stats
   const equiposTotal = equipos.length;
-  const equiposOperativos = equipos.filter(e => e.estado === 'Operativo').length;
-  const equiposAveriados = equipos.filter(e => e.estado === 'Averiado' || e.estado === 'Fuera de servicio').length;
+  const equiposOperativos = equipos.filter(e => e.estado === 'Disponible').length;
+  const equiposAveriados = equipos.filter(e => e.estado === 'Dañado' || e.estado === 'Retirado').length;
   const equiposMantenimiento = equipos.filter(e => e.estado === 'En mantenimiento').length;
 
   const recientes = [...incidencias]
@@ -216,13 +216,13 @@ function Dashboard() {
               <IncidentCard label="Equipos Registrados" valor={equiposTotal} icon="bi-pc-display-horizontal" bg="primary" />
             </div>
             <div className="col-12 col-sm-6 col-lg-3">
-              <IncidentCard label="Equipos Operativos" valor={equiposOperativos} icon="bi-check-circle" bg="success" />
+              <IncidentCard label="Equipos Disponibles" valor={equiposOperativos} icon="bi-check-circle" bg="success" />
             </div>
             <div className="col-12 col-sm-6 col-lg-3">
               <IncidentCard label="En Mantenimiento" valor={equiposMantenimiento} icon="bi-tools" bg="warning" textDark />
             </div>
             <div className="col-12 col-sm-6 col-lg-3">
-              <IncidentCard label="Fuera de Servicio" valor={equiposAveriados} icon="bi-exclamation-triangle" bg="danger" />
+              <IncidentCard label="Dañados / Retirados" valor={equiposAveriados} icon="bi-exclamation-triangle" bg="danger" />
             </div>
           </div>
 

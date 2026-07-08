@@ -85,10 +85,9 @@
       "marca": "Dell",
       "modelo": "OptiPlex 7090",
       "laboratorio": "Laboratorio 1",
-      "estado": "Disponible",
+      "estado": "Operativo",
       "fechaAdquisicion": "2023-01-15",
-      "observaciones": "",
-      "criticidad": "Media"
+      "observaciones": ""
     },
     {
       "id": "2",
@@ -98,10 +97,9 @@
       "marca": "Dell",
       "modelo": "OptiPlex 7090",
       "laboratorio": "Laboratorio 1",
-      "estado": "Disponible",
+      "estado": "Operativo",
       "fechaAdquisicion": "2023-01-15",
-      "observaciones": "",
-      "criticidad": "Media"
+      "observaciones": ""
     },
     {
       "id": "3",
@@ -111,10 +109,9 @@
       "marca": "Samsung",
       "modelo": "F24T35",
       "laboratorio": "Laboratorio 1",
-      "estado": "Disponible",
+      "estado": "Operativo",
       "fechaAdquisicion": "2023-01-20",
-      "observaciones": "Pantalla parpadea",
-      "criticidad": "Baja"
+      "observaciones": "Pantalla parpadea"
     },
     {
       "id": "4",
@@ -126,8 +123,7 @@
       "laboratorio": "Laboratorio 2",
       "estado": "En mantenimiento",
       "fechaAdquisicion": "2022-05-10",
-      "observaciones": "Posible fallo de disco duro",
-      "criticidad": "Media"
+      "observaciones": "Posible fallo de disco duro"
     },
     {
       "id": "5",
@@ -137,10 +133,9 @@
       "marca": "Epson",
       "modelo": "L3250",
       "laboratorio": "Administración",
-      "estado": "Disponible",
+      "estado": "Operativo",
       "fechaAdquisicion": "2024-02-15",
-      "observaciones": "",
-      "criticidad": "Media"
+      "observaciones": ""
     },
     {
       "id": "6",
@@ -150,62 +145,9 @@
       "marca": "Epson",
       "modelo": "PowerLite E20",
       "laboratorio": "Laboratorio 3",
-      "estado": "Dañado",
+      "estado": "Averiado",
       "fechaAdquisicion": "2023-08-10",
-      "observaciones": "",
-      "criticidad": "Media"
-    },
-    {
-      "id": "7",
-      "codigoPatrimonial": "MOU-LAB01-001",
-      "numeroSerie": "SN-MOU01001",
-      "tipoEquipo": "Mouse",
-      "marca": "Logitech",
-      "modelo": "M170",
-      "laboratorio": "Laboratorio 1",
-      "estado": "Disponible",
-      "fechaAdquisicion": "2025-01-10",
-      "observaciones": "Nuevo de prueba",
-      "criticidad": "Baja"
-    },
-    {
-      "id": "8",
-      "codigoPatrimonial": "PC-LAB01-010",
-      "numeroSerie": "SN-PC01010",
-      "tipoEquipo": "PC",
-      "marca": "HP",
-      "modelo": "ProDesk 600",
-      "laboratorio": "Laboratorio 1",
-      "estado": "Disponible",
-      "fechaAdquisicion": "2021-05-15",
-      "observaciones": "Prueba media criticidad",
-      "criticidad": "Media"
-    },
-    {
-      "id": "9",
-      "codigoPatrimonial": "SW-LAB01-001",
-      "numeroSerie": "SN-SW01001",
-      "tipoEquipo": "Switch",
-      "marca": "Cisco",
-      "modelo": "Catalyst 2960",
-      "laboratorio": "Laboratorio 1",
-      "estado": "Disponible",
-      "fechaAdquisicion": "2020-02-20",
-      "observaciones": "Switch principal del lab",
-      "criticidad": "Alta"
-    },
-    {
-      "id": "10",
-      "codigoPatrimonial": "SRV-SIS-001",
-      "numeroSerie": "SN-SRV001",
-      "tipoEquipo": "Servidor",
-      "marca": "Dell",
-      "modelo": "PowerEdge R740",
-      "laboratorio": "Administración",
-      "estado": "Disponible",
-      "fechaAdquisicion": "2019-11-10",
-      "observaciones": "Servidor institucional principal",
-      "criticidad": "Crítica"
+      "observaciones": ""
     }
   ],
   "incidencias": [
@@ -263,7 +205,7 @@
       "fecha": "2026-07-04",
       "reportante": "Administrador Principal",
       "prioridad": "Alta",
-      "estado": "Asignada",
+      "estado": "Revisada",
       "id": "ajBXnyzY88k"
     },
     {
@@ -277,20 +219,6 @@
       "prioridad": "Alta",
       "estado": "Reparada",
       "id": "giLOQUgKuHk"
-    },
-    {
-      "codigoEquipo": "SRV-SIS-001",
-      "equipoId": "10",
-      "tipoEquipo": "Servidor",
-      "laboratorio": "Administración",
-      "descripcion": "Se cayo el servido, y se destruyo",
-      "fecha": "2026-07-08",
-      "reportante": "Administrador Principal",
-      "prioridad": "Crítica",
-      "estado": "Cerrada",
-      "usuariosAfectados": ">30",
-      "impideActividades": "Impide actividades",
-      "id": "H6Z7qRIfTDI"
     }
   ],
   "mantenimientos": [
@@ -377,41 +305,6 @@
       "tiempoEmpleado": "",
       "fechaFin": "2026-07-06",
       "id": "8M8p2HV7QFM"
-    },
-    {
-      "incidenciaId": "H6Z7qRIfTDI",
-      "equipoId": "10",
-      "tecnicoId": "TEC001",
-      "nombreTecnico": "Juan Pablo Pérez Torres",
-      "fechaProgramada": "2026-07-08",
-      "prioridad": "Alta",
-      "tipoMantenimiento": "Correctivo",
-      "observacionesIniciales": "",
-      "fechaInicio": "",
-      "diagnostico": "",
-      "actividades": "",
-      "repuestos": "",
-      "observacionesTecnico": "",
-      "tiempoEmpleado": "",
-      "fechaFin": "2026-07-08",
-      "id": "0I3q-AAeyh0"
-    },
-    {
-      "incidenciaId": "ajBXnyzY88k",
-      "equipoId": "6",
-      "tecnicoId": "TEC001",
-      "nombreTecnico": "Juan Pablo Pérez Torres",
-      "fechaProgramada": "2026-07-09",
-      "tipoMantenimiento": "Correctivo",
-      "observacionesIniciales": "",
-      "fechaInicio": "",
-      "diagnostico": "",
-      "actividades": "",
-      "repuestos": "",
-      "observacionesTecnico": "",
-      "tiempoEmpleado": "",
-      "fechaFin": "",
-      "id": "X9WNCtS88UI"
     }
   ],
   "historialIncidencias": [
@@ -614,54 +507,6 @@
       "observacion": "El técnico marcó la incidencia como Reparada",
       "fecha": "2026-07-06T23:26:35.380Z",
       "id": "f3oyd2S1kvU"
-    },
-    {
-      "incidenciaId": "H6Z7qRIfTDI",
-      "usuario": "Administrador Principal",
-      "accion": "Reportó incidencia",
-      "observacion": "Falla inicial reportada. Prioridad calculada: Crítica",
-      "fecha": "2026-07-08T15:09:04.340Z",
-      "id": "UQvVHweafuE"
-    },
-    {
-      "incidenciaId": "H6Z7qRIfTDI",
-      "usuario": "Administrador Principal",
-      "accion": "Cambió estado a Revisada",
-      "observacion": "Cambio manual realizado por el administrador",
-      "fecha": "2026-07-08T15:12:49.045Z",
-      "id": "PTG-6uIddlQ"
-    },
-    {
-      "incidenciaId": "H6Z7qRIfTDI",
-      "usuario": "Administrador Principal",
-      "accion": "Asignó técnico",
-      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
-      "fecha": "2026-07-08T15:13:09.238Z",
-      "id": "t3n82VdMgBg"
-    },
-    {
-      "incidenciaId": "H6Z7qRIfTDI",
-      "usuario": "Juan Pablo Pérez Torres",
-      "accion": "Finalizó mantenimiento",
-      "observacion": "El técnico marcó la incidencia como Reparada",
-      "fecha": "2026-07-08T15:13:22.594Z",
-      "id": "bPT46P-2Kw0"
-    },
-    {
-      "incidenciaId": "H6Z7qRIfTDI",
-      "usuario": "Administrador Principal",
-      "accion": "Cambió estado a Cerrada",
-      "observacion": "Cambio manual realizado por el administrador",
-      "fecha": "2026-07-08T15:13:30.948Z",
-      "id": "H62UrtVGFRw"
-    },
-    {
-      "incidenciaId": "ajBXnyzY88k",
-      "usuario": "Administrador Principal",
-      "accion": "Asignó técnico",
-      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
-      "fecha": "2026-07-08T15:20:47.644Z",
-      "id": "q59oyqgP-js"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -1,10 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { getEquipos, deleteEquipo } from '../services/api';
+import { getEquipos, deleteEquipo, getIncidents, getMantenimientos } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
 
 function EquipmentList() {
   const [equipos, setEquipos] = useState([]);
+  const [incidencias, setIncidencias] = useState([]);
+  const [mantenimientos, setMantenimientos] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
 
@@ -14,53 +16,130 @@ function EquipmentList() {
   const [filtroTipo, setFiltroTipo] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
 
-  const cargarEquipos = async () => {
+  const cargarDatos = async () => {
     setLoading(true);
     try {
-      const data = await getEquipos();
-      setEquipos(data);
+      const [eqData, incData, mantData] = await Promise.all([
+        getEquipos(),
+        getIncidents(),
+        getMantenimientos()
+      ]);
+      setEquipos(eqData);
+      setIncidencias(incData);
+      setMantenimientos(mantData);
     } catch (error) {
-      console.error('Error al cargar equipos:', error);
+      console.error('Error al cargar datos del inventario:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    cargarEquipos();
+    cargarDatos();
   }, []);
 
   const handleDelete = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este equipo?')) {
       try {
         await deleteEquipo(id);
-        cargarEquipos();
+        cargarDatos();
       } catch (error) {
         console.error('Error al eliminar equipo:', error);
       }
     }
   };
 
+  const getCriticidadBadge = (criticidad) => {
+    switch (criticidad) {
+      case 'Baja': return 'bg-success';
+      case 'Media': return 'bg-info text-dark';
+      case 'Alta': return 'bg-warning text-dark';
+      case 'Crítica': return 'bg-danger';
+      default: return 'bg-secondary';
+    }
+  };
+
   const getEstadoBadge = (estado) => {
     switch (estado) {
-      case 'Operativo': return 'bg-success';
+      case 'Disponible': return 'bg-success';
       case 'En mantenimiento': return 'bg-warning text-dark';
-      case 'Averiado': return 'bg-danger';
-      case 'Fuera de servicio': return 'bg-secondary';
+      case 'Dañado': return 'bg-danger';
+      case 'Retirado': return 'bg-secondary';
       default: return 'bg-dark';
     }
   };
 
+  const getMantenimientoBadge = (estado) => {
+    switch (estado) {
+      case 'Al día': return 'bg-success';
+      case 'Próximo mantenimiento': return 'bg-info text-dark';
+      case 'Requiere mantenimiento': return 'bg-warning text-dark';
+      case 'Recomendado reemplazo': return 'bg-danger';
+      case 'Requiere evaluación': return 'bg-dark text-white'; 
+      default: return 'bg-secondary';
+    }
+  };
+
+  const calcularAntiguedad = (fechaAdquisicion) => {
+    if (!fechaAdquisicion) return 'Desconocida';
+    const ac = new Date();
+    const fa = new Date(fechaAdquisicion);
+    let años = ac.getFullYear() - fa.getFullYear();
+    let meses = ac.getMonth() - fa.getMonth();
+    if (meses < 0) {
+      años--;
+      meses += 12;
+    }
+    if (años === 0 && meses === 0) return 'Nuevo';
+    return `${años > 0 ? años + ' años' : ''} ${meses > 0 ? meses + ' meses' : ''}`.trim();
+  };
+
+  const calcularEstadoMantenimiento = (equipo) => {
+    const eqIncidencias = incidencias.filter(i => i.codigoEquipo === equipo.codigoPatrimonial);
+    const eqMantenimientos = mantenimientos.filter(m => eqIncidencias.find(i => i.id === m.incidenciaId));
+    
+    // Obtener antigüedad en años
+    const ac = new Date();
+    const fa = new Date(equipo.fechaAdquisicion || ac);
+    const diffTime = Math.abs(ac - fa);
+    const añosAntiguedad = diffTime / (1000 * 60 * 60 * 24 * 365.25);
+
+    // Obtener meses desde último mantenimiento
+    let mesesSinMantenimiento = 999;
+    if (eqMantenimientos.length > 0) {
+      const ultimoMant = eqMantenimientos.sort((a, b) => new Date(b.fechaFin || 0) - new Date(a.fechaFin || 0))[0];
+      if (ultimoMant.fechaFin) {
+        const fm = new Date(ultimoMant.fechaFin);
+        mesesSinMantenimiento = (ac.getFullYear() - fm.getFullYear()) * 12 + (ac.getMonth() - fm.getMonth());
+      }
+    } else {
+      mesesSinMantenimiento = añosAntiguedad * 12;
+    }
+
+    if (añosAntiguedad >= 5) return 'Recomendado reemplazo';
+    if (eqIncidencias.length >= 3 || añosAntiguedad >= 4) return 'Requiere evaluación';
+    if (mesesSinMantenimiento >= 6) return 'Requiere mantenimiento';
+    if (mesesSinMantenimiento >= 4) return 'Próximo mantenimiento';
+
+    return 'Al día';
+  };
+
   const laboratorios = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Administración'];
   const tipos = ['PC', 'Monitor', 'Impresora', 'Router', 'Switch', 'Proyector', 'Otro'];
-  const estados = ['Operativo', 'En mantenimiento', 'Averiado', 'Fuera de servicio'];
+  const estados = ['Disponible', 'En mantenimiento', 'Dañado', 'Retirado'];
 
-  const equiposFiltrados = equipos.filter(e => {
+  const equiposProcesados = equipos.map(e => ({
+    ...e,
+    estadoMantenimiento: calcularEstadoMantenimiento(e),
+    antiguedadTexto: calcularAntiguedad(e.fechaAdquisicion)
+  }));
+
+  const equiposFiltrados = equiposProcesados.filter(e => {
     return (
       (filtroCodigo === '' || e.codigoPatrimonial.toLowerCase().includes(filtroCodigo.toLowerCase())) &&
       (filtroLab === '' || e.laboratorio === filtroLab) &&
       (filtroTipo === '' || e.tipoEquipo === filtroTipo) &&
-      (filtroEstado === '' || e.estado === filtroEstado)
+      (filtroEstado === '' || e.estado === filtroEstado) // Changed to use e.estado (operational)
     );
   });
 
@@ -97,7 +176,13 @@ function EquipmentList() {
           <div className="col-12 col-md-3">
             <select className="form-select form-select-sm" value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
               <option value="">Todos los estados</option>
-              {estados.map(e => <option key={e} value={e}>{e}</option>)}
+              <option value="Operativo">Operativo</option>
+              <option value="Requiere mantenimiento">Requiere mantenimiento</option>
+              <option value="Requiere evaluación">Requiere evaluación</option>
+              <option value="Recomendado reemplazo">Recomendado reemplazo</option>
+              <option value="En mantenimiento">En mantenimiento</option>
+              <option value="Averiado">Averiado</option>
+              <option value="Fuera de servicio">Fuera de servicio</option>
             </select>
           </div>
         </div>
@@ -117,7 +202,10 @@ function EquipmentList() {
                   <th>Tipo</th>
                   <th>Marca/Modelo</th>
                   <th>Laboratorio</th>
-                  <th>Estado</th>
+                  <th>Criticidad</th>
+                  <th>Antigüedad</th>
+                  <th>Operativo</th>
+                  <th>Mantenimiento</th>
                   <th className="text-end">Acciones</th>
                 </tr>
               </thead>
@@ -136,8 +224,19 @@ function EquipmentList() {
                       <td>{equipo.marca} {equipo.modelo}</td>
                       <td>{equipo.laboratorio}</td>
                       <td>
+                        <span className={`badge border ${getCriticidadBadge(equipo.criticidad || 'Media')}`}>
+                          {equipo.criticidad || 'Media'}
+                        </span>
+                      </td>
+                      <td className="text-muted small">{equipo.antiguedadTexto}</td>
+                      <td>
                         <span className={`badge ${getEstadoBadge(equipo.estado)}`}>
                           {equipo.estado}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`badge ${getMantenimientoBadge(equipo.estadoMantenimiento)}`}>
+                          {equipo.estadoMantenimiento}
                         </span>
                       </td>
                       <td className="text-end">

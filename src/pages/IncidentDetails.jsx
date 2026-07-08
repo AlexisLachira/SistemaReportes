@@ -16,7 +16,7 @@ function IncidentDetails() {
   const [showConfirm, setShowConfirm] = useState(false);
   const { user } = useContext(AuthContext);
 
-  const [assignForm, setAssignForm] = useState({ tecnicoId: '', fechaProgramada: '', prioridad: 'Media', tipoMantenimiento: 'Correctivo', observacionesIniciales: '' });
+  const [assignForm, setAssignForm] = useState({ tecnicoId: '', fechaProgramada: '', tipoMantenimiento: 'Correctivo', observacionesIniciales: '' });
   const [assignLoading, setAssignLoading] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -61,7 +61,7 @@ function IncidentDetails() {
         const equipos = await getEquipos();
         const eq = equipos.find(e => e.codigoPatrimonial === incidencia.codigoEquipo);
         if (eq) {
-          await updateEquipo(eq.id, { ...eq, estado: 'Operativo' });
+          await updateEquipo(eq.id, { ...eq, estado: 'Disponible' });
         }
       }
 
@@ -96,7 +96,6 @@ function IncidentDetails() {
         tecnicoId: assignForm.tecnicoId,
         nombreTecnico: nombreTec,
         fechaProgramada: assignForm.fechaProgramada,
-        prioridad: assignForm.prioridad,
         tipoMantenimiento: assignForm.tipoMantenimiento,
         observacionesIniciales: assignForm.observacionesIniciales,
         fechaInicio: '',
@@ -129,9 +128,10 @@ function IncidentDetails() {
 
   const getPrioridadBadge = (p) => {
     switch(p) {
+      case 'Crítica': return 'bg-dark text-white';
       case 'Alta': return 'bg-danger';
       case 'Media': return 'bg-warning text-dark';
-      case 'Baja': return 'bg-info text-dark';
+      case 'Baja': return 'bg-success';
       default: return 'bg-secondary';
     }
   };
@@ -227,13 +227,25 @@ function IncidentDetails() {
                 <p className="fs-5 fw-semibold mb-0 text-dark">{incidencia.fecha}</p>
               </div>
             </div>
-            <div className="col-md-6 col-lg-4">
+            <div className="col-md-6 col-lg-3">
               <div className="bg-white p-3 rounded shadow-sm h-100 border">
                 <small className="text-muted text-uppercase fw-bold" style={{fontSize: '0.75rem'}}>Reportante</small>
                 <p className="fs-5 fw-semibold mb-0 text-dark">{incidencia.reportante}</p>
               </div>
             </div>
-            <div className="col-md-6 col-lg-4">
+            <div className="col-md-6 col-lg-3">
+              <div className="bg-white p-3 rounded shadow-sm h-100 border">
+                <small className="text-muted text-uppercase fw-bold" style={{fontSize: '0.75rem'}}>Usuarios Afectados</small>
+                <p className="fs-6 fw-semibold mb-0 text-dark">{incidencia.usuariosAfectados || 'No registrado'}</p>
+              </div>
+            </div>
+            <div className="col-md-6 col-lg-3">
+              <div className="bg-white p-3 rounded shadow-sm h-100 border">
+                <small className="text-muted text-uppercase fw-bold" style={{fontSize: '0.75rem'}}>Interrupción</small>
+                <p className="fs-6 fw-semibold mb-0 text-dark">{incidencia.impideActividades || 'No registrado'}</p>
+              </div>
+            </div>
+            <div className="col-md-6 col-lg-3">
               <div className="bg-white p-3 rounded shadow-sm h-100 border">
                 <small className="text-muted text-uppercase fw-bold" style={{fontSize: '0.75rem'}}>Prioridad</small>
                 <div>
@@ -304,26 +316,15 @@ function IncidentDetails() {
                   />
                 </div>
                 <div className="col-md-3">
-                  <label className="form-label fw-semibold">Prioridad Mantenimiento</label>
-                  <select 
-                    className="form-select"
-                    value={assignForm.prioridad}
-                    onChange={(e) => setAssignForm({...assignForm, prioridad: e.target.value})}
-                  >
-                    <option value="Baja">Baja</option>
-                    <option value="Media">Media</option>
-                    <option value="Alta">Alta</option>
-                  </select>
-                </div>
-                <div className="col-md-3">
-                  <label className="form-label fw-semibold">Tipo Mantenimiento</label>
+                  <label className="form-label fw-semibold">Tipo de Mantenimiento</label>
                   <select 
                     className="form-select"
                     value={assignForm.tipoMantenimiento}
                     onChange={(e) => setAssignForm({...assignForm, tipoMantenimiento: e.target.value})}
                   >
-                    <option value="Preventivo">Preventivo</option>
                     <option value="Correctivo">Correctivo</option>
+                    <option value="Preventivo">Preventivo</option>
+                    <option value="Predictivo">Predictivo</option>
                   </select>
                 </div>
                 <div className="col-12">

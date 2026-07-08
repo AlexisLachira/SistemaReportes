@@ -12,7 +12,7 @@ function EquipmentForm({ editId = null }) {
     marca: '',
     modelo: '',
     laboratorio: '',
-    estado: 'Operativo',
+    estado: 'Disponible',
     fechaAdquisicion: new Date().toISOString().split('T')[0],
     observaciones: '',
   });
@@ -23,7 +23,7 @@ function EquipmentForm({ editId = null }) {
 
   const tiposEquipo = ['PC', 'Monitor', 'Impresora', 'Router', 'Switch', 'Proyector', 'Otro'];
   const laboratorios = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Administración'];
-  const estados = ['Operativo', 'En mantenimiento', 'Averiado', 'Fuera de servicio'];
+  const estados = ['Disponible', 'En mantenimiento', 'Dañado', 'Retirado'];
 
   useEffect(() => {
     if (editId) {

@@ -190,7 +190,7 @@ function EquipmentHistory() {
                 <li className="mb-2"><span className="fw-bold text-muted">Laboratorio:</span> {equipo.laboratorio}</li>
                 <li className="mb-2">
                   <span className="fw-bold text-muted">Estado Actual:</span> 
-                  <span className={`badge bg-${equipo.estado === 'Operativo' ? 'success' : 'danger'} ms-2`}>{equipo.estado}</span>
+                  <span className={`badge bg-${equipo.estado === 'Disponible' ? 'success' : 'danger'} ms-2`}>{equipo.estado}</span>
                 </li>
               </ul>
             </div>

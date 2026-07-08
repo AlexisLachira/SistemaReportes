@@ -65,7 +65,7 @@ function MyMaintenances() {
     }
     if (filtroPrioridad) {
       resultado = resultado.filter(mant => 
-        (mant.prioridad === filtroPrioridad) || (incidencias[mant.incidenciaId]?.prioridad === filtroPrioridad)
+        incidencias[mant.incidenciaId]?.prioridad === filtroPrioridad
       );
     }
     if (filtroLaboratorio) {
@@ -83,6 +83,16 @@ function MyMaintenances() {
       case 'Reparada': return 'bg-success';
       case 'Cerrada': return 'bg-secondary';
       default: return 'bg-light text-dark border';
+    }
+  };
+
+  const getPrioridadBadge = (prioridad) => {
+    switch(prioridad) {
+      case 'Crítica': return 'bg-dark text-white';
+      case 'Alta': return 'bg-danger text-white';
+      case 'Media': return 'bg-warning text-dark';
+      case 'Baja': return 'bg-success text-white';
+      default: return 'bg-secondary text-white';
     }
   };
 
@@ -120,6 +130,7 @@ function MyMaintenances() {
               <label className="form-label small fw-bold text-muted">Prioridad</label>
               <select className="form-select" value={filtroPrioridad} onChange={(e) => setFiltroPrioridad(e.target.value)}>
                 <option value="">Todas las prioridades</option>
+                <option value="Crítica">Crítica</option>
                 <option value="Alta">Alta</option>
                 <option value="Media">Media</option>
                 <option value="Baja">Baja</option>
@@ -168,13 +179,17 @@ function MyMaintenances() {
                     </div>
 
                     <div className="d-flex justify-content-between align-items-center mb-1 small">
+                      <span className="text-muted">Fecha de registro:</span>
+                      <span className="fw-semibold">{inc.fecha}</span>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mb-1 small">
                       <span className="text-muted">Fecha Programada:</span>
                       <span className="fw-semibold">{mant.fechaProgramada || 'Sin definir'}</span>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center small">
-                      <span className="text-muted">Prioridad:</span>
-                      <span className={`fw-semibold text-${mant.prioridad === 'Alta' ? 'danger' : mant.prioridad === 'Media' ? 'warning' : 'info'}`}>
-                        {mant.prioridad || inc.prioridad}
+                    <div className="d-flex justify-content-between align-items-center mt-2 small">
+                      <span className="text-muted">Prioridad Oficial:</span>
+                      <span className={`badge ${getPrioridadBadge(inc.prioridad)}`}>
+                        {inc.prioridad}
                       </span>
                     </div>
                   </div>
