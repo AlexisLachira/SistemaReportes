@@ -12,13 +12,24 @@ Para que el proyecto funcione en la nube, se debe alojar en dos partes separadas
 
 Como Vercel es un servicio *Serverless* (sin servidor continuo) optimizado para páginas estáticas, no puede mantener ejecutándose a `json-server`. Por eso usaremos un servicio especializado como **Glitch.com** o **Render.com**.
 
-### Opción Recomendada: Glitch.com (Datos Persistentes)
-1. Inicia sesión en [Glitch.com](https://glitch.com/).
-2. Haz clic en **"New Project"** -> **"Import from GitHub"** (o puedes subir la carpeta manualmente si creas un proyecto básico de Node).
-3. Sube únicamente el contenido de tu carpeta `backend/` (el `db.json` y el `package.json`).
-4. Glitch detectará automáticamente el archivo `package.json` y ejecutará el script `"start": "json-server --host 0.0.0.0 --port 3001 db.json"`.
-5. Obtén la URL en vivo de tu proyecto (ej. `https://tu-proyecto-glitch.glitch.me`).
-6. **Importante:** Añade `/incidencias` a la URL en tu navegador web para asegurarte de que responde con código JSON.
+### Opción Elegida: Render.com (Web Service)
+
+Render es excelente para alojar tu API, pero es importante que conozcas un detalle técnico de su plan gratuito: el disco es *efímero*. Esto significa que si la API está inactiva por 15 minutos, se apaga. Al encenderse nuevamente, **cualquier incidencia que hayas creado se borrará** y la base de datos regresará a su estado original (el archivo `db.json` que subiste). Para un proyecto académico esto suele ser útil porque el profesor siempre encontrará el sistema "limpio", pero tenlo en cuenta.
+
+#### Pasos para desplegar en Render:
+1. Sube tu carpeta `backend/` a un repositorio nuevo en GitHub (o sube todo el proyecto y configura el directorio raíz).
+2. Inicia sesión en [Render.com](https://render.com/).
+3. Haz clic en **"New"** -> **"Web Service"**.
+4. Conecta tu cuenta de GitHub y selecciona el repositorio donde subiste el backend.
+5. Configura el servicio así:
+   - **Name:** *sistema-incidencias-api* (o el nombre que quieras).
+   - **Root Directory:** `backend` (solo si subiste todo el proyecto en un solo repositorio. Si subiste la carpeta backend como su propio repositorio, déjalo en blanco).
+   - **Environment:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+6. En la parte inferior, haz clic en **"Create Web Service"**.
+7. Render empezará a compilar tu aplicación. Al finalizar, te dará una URL (ej. `https://tu-api.onrender.com`).
+8. **Verificación:** Ingresa a `https://tu-api.onrender.com/incidencias` en tu navegador. Si ves el código JSON, ¡el backend está funcionando!
 
 ---
 
@@ -37,7 +48,7 @@ Una vez que tengas la URL de tu backend funcionando, es hora de publicar tu inte
 3. **Configurar las Variables de Entorno (¡CRÍTICO!):**
    Antes de hacer clic en "Deploy", despliega la sección de **"Environment Variables"** en Vercel.
    - **Name:** `VITE_API_URL`
-   - **Value:** *La URL pública que obtuviste en Glitch o Render* (ej. `https://tu-proyecto-glitch.glitch.me`) *(Importante: No le agregues la barra final `/` ni endpoints como `/incidencias`)*.
+   - **Value:** *La URL pública que obtuviste en Render* (ej. `https://tu-api.onrender.com`) *(Importante: No le agregues la barra final `/` ni endpoints como `/incidencias`)*.
    - Haz clic en **Add**.
 
 4. **Desplegar:**
