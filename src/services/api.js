@@ -3,8 +3,8 @@
  * Utiliza Fetch API para operaciones CRUD de incidencias
  */
 
-// URL base del JSON Server
-const API_URL = "http://localhost:3001/incidencias";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_URL = `${BASE_URL}/incidencias`;
 
 /**
  * Obtener todas las incidencias
@@ -72,7 +72,7 @@ export const deleteIncident = async (id) => {
 };
 
 // --- EQUIPOS ---
-const EQUIPOS_URL = "http://localhost:3001/equipos";
+const EQUIPOS_URL = `${BASE_URL}/equipos`;
 
 export const getEquipos = async () => {
   const response = await fetch(EQUIPOS_URL);
@@ -115,7 +115,7 @@ export const deleteEquipo = async (id) => {
 };
 
 // --- MANTENIMIENTOS ---
-const MANTENIMIENTOS_URL = "http://localhost:3001/mantenimientos";
+const MANTENIMIENTOS_URL = `${BASE_URL}/mantenimientos`;
 
 export const getMantenimientos = async () => {
   const response = await fetch(MANTENIMIENTOS_URL);
@@ -144,7 +144,7 @@ export const updateMantenimiento = async (id, data) => {
 };
 
 // --- HISTORIAL ---
-const HISTORIAL_URL = "http://localhost:3001/historialIncidencias";
+const HISTORIAL_URL = `${BASE_URL}/historialIncidencias`;
 
 export const getHistorial = async () => {
   const response = await fetch(HISTORIAL_URL);
@@ -170,7 +170,7 @@ export const createHistorial = async (data) => {
 };
 
 // --- TÉCNICOS ---
-const TECNICOS_URL = "http://localhost:3001/tecnicos";
+const TECNICOS_URL = `${BASE_URL}/tecnicos`;
 
 export const getTecnicos = async () => {
   const response = await fetch(TECNICOS_URL);

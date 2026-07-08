@@ -1,0 +1,12 @@
+{
+  "name": "sistema-incidencias-backend",
+  "version": "1.0.0",
+  "description": "Backend simulado con JSON Server para el sistema de incidencias",
+  "main": "index.js",
+  "scripts": {
+    "start": "json-server --host 0.0.0.0 --port 3001 db.json"
+  },
+  "dependencies": {
+    "json-server": "^0.17.4"
+  }
+}

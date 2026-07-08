@@ -1,0 +1,668 @@
+{
+  "usuarios": [
+    {
+      "id": "admin",
+      "codigo": "admin",
+      "contrasena": "admin123",
+      "rol": "administrador",
+      "nombre": "Administrador Principal"
+    },
+    {
+      "id": "202300001",
+      "codigo": "202300001",
+      "contrasena": "alumno123",
+      "rol": "alumno",
+      "nombre": "Manuel Alexis Lachira"
+    },
+    {
+      "id": "202300002",
+      "codigo": "202300002",
+      "contrasena": "alumno123",
+      "rol": "alumno",
+      "nombre": "María López Vargas"
+    },
+    {
+      "id": "202400003",
+      "codigo": "202400003",
+      "contrasena": "alumno123",
+      "rol": "alumno",
+      "nombre": "Carlos Ruiz Gómez"
+    }
+  ],
+  "tecnicos": [
+    {
+      "id": "TEC001",
+      "codigo": "TEC001",
+      "contrasena": "tec123",
+      "rol": "tecnico",
+      "nombre": "Juan Pablo Pérez Torres",
+      "dni": "71234567",
+      "nombres": "Juan Pablo",
+      "apellidos": "Pérez Torres",
+      "especialidad": "Hardware y Redes",
+      "telefono": "987654321",
+      "correo": "jperez@unp.edu",
+      "estado": "Activo",
+      "fechaIngreso": "2024-01-15"
+    },
+    {
+      "id": "TEC002",
+      "codigo": "TEC002",
+      "contrasena": "tec123",
+      "rol": "tecnico",
+      "nombre": "Ana Paula García Soto",
+      "dni": "72345678",
+      "nombres": "Ana Paula",
+      "apellidos": "García Soto",
+      "especialidad": "Software y Sistemas",
+      "telefono": "912345678",
+      "correo": "agarcia@unp.edu",
+      "estado": "Activo",
+      "fechaIngreso": "2024-03-10"
+    },
+    {
+      "id": "TEC003",
+      "codigo": "TEC003",
+      "contrasena": "tec123",
+      "rol": "tecnico",
+      "nombre": "Roberto Campos Flores",
+      "dni": "73456789",
+      "nombres": "Roberto",
+      "apellidos": "Campos Flores",
+      "especialidad": "Electrónica",
+      "telefono": "923456789",
+      "correo": "rcampos@unp.edu",
+      "estado": "Inactivo",
+      "fechaIngreso": "2023-11-05"
+    }
+  ],
+  "equipos": [
+    {
+      "id": "1",
+      "codigoPatrimonial": "PC-LAB01-001",
+      "numeroSerie": "SN-PC01001",
+      "tipoEquipo": "PC",
+      "marca": "Dell",
+      "modelo": "OptiPlex 7090",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Disponible",
+      "fechaAdquisicion": "2023-01-15",
+      "observaciones": "",
+      "criticidad": "Media"
+    },
+    {
+      "id": "2",
+      "codigoPatrimonial": "PC-LAB01-002",
+      "numeroSerie": "SN-PC01002",
+      "tipoEquipo": "PC",
+      "marca": "Dell",
+      "modelo": "OptiPlex 7090",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Disponible",
+      "fechaAdquisicion": "2023-01-15",
+      "observaciones": "",
+      "criticidad": "Media"
+    },
+    {
+      "id": "3",
+      "codigoPatrimonial": "MON-LAB01-001",
+      "numeroSerie": "SN-MON01001",
+      "tipoEquipo": "Monitor",
+      "marca": "Samsung",
+      "modelo": "F24T35",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Disponible",
+      "fechaAdquisicion": "2023-01-20",
+      "observaciones": "Pantalla parpadea",
+      "criticidad": "Baja"
+    },
+    {
+      "id": "4",
+      "codigoPatrimonial": "PC-LAB02-001",
+      "numeroSerie": "SN-PC02001",
+      "tipoEquipo": "PC",
+      "marca": "HP",
+      "modelo": "ProDesk 400",
+      "laboratorio": "Laboratorio 2",
+      "estado": "En mantenimiento",
+      "fechaAdquisicion": "2022-05-10",
+      "observaciones": "Posible fallo de disco duro",
+      "criticidad": "Media"
+    },
+    {
+      "id": "5",
+      "codigoPatrimonial": "IMP-ADM-01",
+      "numeroSerie": "SN-IMP001",
+      "tipoEquipo": "Impresora",
+      "marca": "Epson",
+      "modelo": "L3250",
+      "laboratorio": "Administración",
+      "estado": "Disponible",
+      "fechaAdquisicion": "2024-02-15",
+      "observaciones": "",
+      "criticidad": "Media"
+    },
+    {
+      "id": "6",
+      "codigoPatrimonial": "PROY-LAB03-01",
+      "numeroSerie": "SN-PROY001",
+      "tipoEquipo": "Proyector",
+      "marca": "Epson",
+      "modelo": "PowerLite E20",
+      "laboratorio": "Laboratorio 3",
+      "estado": "Dañado",
+      "fechaAdquisicion": "2023-08-10",
+      "observaciones": "",
+      "criticidad": "Media"
+    },
+    {
+      "id": "7",
+      "codigoPatrimonial": "MOU-LAB01-001",
+      "numeroSerie": "SN-MOU01001",
+      "tipoEquipo": "Mouse",
+      "marca": "Logitech",
+      "modelo": "M170",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Disponible",
+      "fechaAdquisicion": "2025-01-10",
+      "observaciones": "Nuevo de prueba",
+      "criticidad": "Baja"
+    },
+    {
+      "id": "8",
+      "codigoPatrimonial": "PC-LAB01-010",
+      "numeroSerie": "SN-PC01010",
+      "tipoEquipo": "PC",
+      "marca": "HP",
+      "modelo": "ProDesk 600",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Disponible",
+      "fechaAdquisicion": "2021-05-15",
+      "observaciones": "Prueba media criticidad",
+      "criticidad": "Media"
+    },
+    {
+      "id": "9",
+      "codigoPatrimonial": "SW-LAB01-001",
+      "numeroSerie": "SN-SW01001",
+      "tipoEquipo": "Switch",
+      "marca": "Cisco",
+      "modelo": "Catalyst 2960",
+      "laboratorio": "Laboratorio 1",
+      "estado": "Disponible",
+      "fechaAdquisicion": "2020-02-20",
+      "observaciones": "Switch principal del lab",
+      "criticidad": "Alta"
+    },
+    {
+      "id": "10",
+      "codigoPatrimonial": "SRV-SIS-001",
+      "numeroSerie": "SN-SRV001",
+      "tipoEquipo": "Servidor",
+      "marca": "Dell",
+      "modelo": "PowerEdge R740",
+      "laboratorio": "Administración",
+      "estado": "Disponible",
+      "fechaAdquisicion": "2019-11-10",
+      "observaciones": "Servidor institucional principal",
+      "criticidad": "Crítica"
+    }
+  ],
+  "incidencias": [
+    {
+      "id": "1",
+      "codigoEquipo": "PC-LAB01-001",
+      "tipoEquipo": "PC",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "El equipo no enciende al presionar el botón de encendido.",
+      "fecha": "2025-06-01",
+      "reportante": "202300001",
+      "prioridad": "Alta",
+      "estado": "Cerrada"
+    },
+    {
+      "id": "2",
+      "codigoEquipo": "MON-LAB01-001",
+      "tipoEquipo": "Monitor",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "La pantalla parpadea constantemente después de 10 minutos de uso.",
+      "fecha": "2025-06-15",
+      "reportante": "202300002",
+      "prioridad": "Media",
+      "estado": "Cerrada"
+    },
+    {
+      "id": "3",
+      "codigoEquipo": "PC-LAB02-001",
+      "tipoEquipo": "PC",
+      "laboratorio": "Laboratorio 2",
+      "descripcion": "El disco duro hace un ruido extraño y el sistema se congela frecuentemente.",
+      "fecha": "2025-06-20",
+      "reportante": "202400003",
+      "prioridad": "Alta",
+      "estado": "Revisada"
+    },
+    {
+      "codigoEquipo": "PC-LAB01-001",
+      "equipoId": "1",
+      "tipoEquipo": "PC",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "Pantalla rota",
+      "fecha": "2026-07-04",
+      "reportante": "Administrador Principal",
+      "prioridad": "Baja",
+      "estado": "Cerrada",
+      "id": "aocKkbL9gE0"
+    },
+    {
+      "codigoEquipo": "PROY-LAB03-01",
+      "equipoId": "6",
+      "tipoEquipo": "Proyector",
+      "laboratorio": "Laboratorio 3",
+      "descripcion": "No enciende",
+      "fecha": "2026-07-04",
+      "reportante": "Administrador Principal",
+      "prioridad": "Alta",
+      "estado": "Asignada",
+      "id": "ajBXnyzY88k"
+    },
+    {
+      "codigoEquipo": "PC-LAB01-001",
+      "equipoId": "1",
+      "tipoEquipo": "PC",
+      "laboratorio": "Laboratorio 1",
+      "descripcion": "Se siente un olor a humo o quemado.",
+      "fecha": "2026-07-05",
+      "reportante": "Manuel Alexis Lachira",
+      "prioridad": "Alta",
+      "estado": "Reparada",
+      "id": "giLOQUgKuHk"
+    },
+    {
+      "codigoEquipo": "SRV-SIS-001",
+      "equipoId": "10",
+      "tipoEquipo": "Servidor",
+      "laboratorio": "Administración",
+      "descripcion": "Se cayo el servido, y se destruyo",
+      "fecha": "2026-07-08",
+      "reportante": "Administrador Principal",
+      "prioridad": "Crítica",
+      "estado": "Cerrada",
+      "usuariosAfectados": ">30",
+      "impideActividades": "Impide actividades",
+      "id": "H6Z7qRIfTDI"
+    }
+  ],
+  "mantenimientos": [
+    {
+      "id": "1",
+      "incidenciaId": "1",
+      "equipoId": "1",
+      "tecnicoId": "TEC001",
+      "tipoMantenimiento": "Correctivo",
+      "fechaProgramada": "2025-06-02",
+      "fechaInicio": "2025-06-02",
+      "fechaFin": "2025-06-03",
+      "diagnostico": "Fuente de poder quemada",
+      "actividades": "Reemplazo de fuente de poder genérica por una certificada 80 Plus",
+      "repuestos": "Fuente de poder 600W",
+      "observacionesTecnico": "Se limpiaron los ventiladores también.",
+      "observacionesIniciales": "Verificar fuente de alimentación"
+    },
+    {
+      "id": "2",
+      "incidenciaId": "3",
+      "equipoId": "4",
+      "tecnicoId": "TEC002",
+      "tipoMantenimiento": "Correctivo",
+      "fechaProgramada": "2025-06-22",
+      "fechaInicio": "",
+      "fechaFin": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "observacionesIniciales": "Revisar estado del disco duro"
+    },
+    {
+      "incidenciaId": "2",
+      "equipoId": "",
+      "tecnicoId": "TEC001",
+      "nombreTecnico": "Juan Pablo Pérez Torres",
+      "fechaProgramada": "2026-07-04",
+      "prioridad": "Media",
+      "tipoMantenimiento": "Correctivo",
+      "observacionesIniciales": "",
+      "fechaInicio": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "tiempoEmpleado": "",
+      "fechaFin": "2026-07-04",
+      "id": "Un6AFsUNXlI"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "equipoId": "1",
+      "tecnicoId": "TEC001",
+      "nombreTecnico": "Juan Pablo Pérez Torres",
+      "fechaProgramada": "2026-07-05",
+      "prioridad": "Baja",
+      "tipoMantenimiento": "Correctivo",
+      "observacionesIniciales": "",
+      "fechaInicio": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "tiempoEmpleado": "",
+      "fechaFin": "2026-07-05",
+      "id": "kEFvMWKMc3M"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "equipoId": "1",
+      "tecnicoId": "TEC001",
+      "nombreTecnico": "Juan Pablo Pérez Torres",
+      "fechaProgramada": "2026-07-07",
+      "prioridad": "Media",
+      "tipoMantenimiento": "Preventivo",
+      "observacionesIniciales": "",
+      "fechaInicio": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "tiempoEmpleado": "",
+      "fechaFin": "2026-07-06",
+      "id": "8M8p2HV7QFM"
+    },
+    {
+      "incidenciaId": "H6Z7qRIfTDI",
+      "equipoId": "10",
+      "tecnicoId": "TEC001",
+      "nombreTecnico": "Juan Pablo Pérez Torres",
+      "fechaProgramada": "2026-07-08",
+      "prioridad": "Alta",
+      "tipoMantenimiento": "Correctivo",
+      "observacionesIniciales": "",
+      "fechaInicio": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "tiempoEmpleado": "",
+      "fechaFin": "2026-07-08",
+      "id": "0I3q-AAeyh0"
+    },
+    {
+      "incidenciaId": "ajBXnyzY88k",
+      "equipoId": "6",
+      "tecnicoId": "TEC001",
+      "nombreTecnico": "Juan Pablo Pérez Torres",
+      "fechaProgramada": "2026-07-09",
+      "tipoMantenimiento": "Correctivo",
+      "observacionesIniciales": "",
+      "fechaInicio": "",
+      "diagnostico": "",
+      "actividades": "",
+      "repuestos": "",
+      "observacionesTecnico": "",
+      "tiempoEmpleado": "",
+      "fechaFin": "",
+      "id": "X9WNCtS88UI"
+    }
+  ],
+  "historialIncidencias": [
+    {
+      "id": "1",
+      "incidenciaId": "1",
+      "fecha": "2025-06-01T10:00:00.000Z",
+      "usuario": "Manuel Alexis Lachira",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada"
+    },
+    {
+      "id": "2",
+      "incidenciaId": "1",
+      "fecha": "2025-06-01T14:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Incidencia revisada por el administrador"
+    },
+    {
+      "id": "3",
+      "incidenciaId": "1",
+      "fecha": "2025-06-02T08:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)"
+    },
+    {
+      "id": "4",
+      "incidenciaId": "1",
+      "fecha": "2025-06-03T15:00:00.000Z",
+      "usuario": "Juan Pablo Pérez Torres",
+      "accion": "Cambió estado a Reparada",
+      "observacion": "Diagnóstico: Fuente de poder quemada. Reemplazo realizado."
+    },
+    {
+      "id": "5",
+      "incidenciaId": "1",
+      "fecha": "2025-06-03T16:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Cerrada",
+      "observacion": "Equipo restaurado y verificado operativo"
+    },
+    {
+      "id": "6",
+      "incidenciaId": "2",
+      "fecha": "2025-06-15T09:30:00.000Z",
+      "usuario": "María López Vargas",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada"
+    },
+    {
+      "id": "7",
+      "incidenciaId": "3",
+      "fecha": "2025-06-20T14:15:00.000Z",
+      "usuario": "Carlos Ruiz Gómez",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada"
+    },
+    {
+      "id": "8",
+      "incidenciaId": "3",
+      "fecha": "2025-06-20T16:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Incidencia revisada"
+    },
+    {
+      "id": "9",
+      "incidenciaId": "3",
+      "fecha": "2025-06-21T08:00:00.000Z",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Ana Paula García Soto (TEC002)"
+    },
+    {
+      "incidenciaId": "2",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-04T23:04:03.967Z",
+      "id": "iZdByzYcBv0"
+    },
+    {
+      "incidenciaId": "2",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
+      "fecha": "2026-07-04T23:04:24.112Z",
+      "id": "d2Fgo8vSjLk"
+    },
+    {
+      "incidenciaId": "2",
+      "usuario": "Juan Pablo Pérez Torres",
+      "accion": "Finalizó mantenimiento",
+      "observacion": "El técnico marcó la incidencia como Reparada",
+      "fecha": "2026-07-04T23:13:44.264Z",
+      "id": "uUdpsTxH4bg"
+    },
+    {
+      "incidenciaId": "2",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Cerrada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-04T23:14:05.592Z",
+      "id": "PP8_cncH2Tg"
+    },
+    {
+      "incidenciaId": "3",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Actualización de estado desde listado",
+      "fecha": "2026-07-04T23:26:36.332Z",
+      "id": "GQ6GnwtqmiM"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Administrador Principal",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada",
+      "fecha": "2026-07-04T23:27:13.546Z",
+      "id": "tvuSogIKg_Q"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-04T23:28:09.336Z",
+      "id": "-dcGhUM2JtE"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
+      "fecha": "2026-07-04T23:28:20.849Z",
+      "id": "ymEgp9a7m4s"
+    },
+    {
+      "incidenciaId": "ajBXnyzY88k",
+      "usuario": "Administrador Principal",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada",
+      "fecha": "2026-07-04T23:29:55.824Z",
+      "id": "MHFBcM12q1U"
+    },
+    {
+      "incidenciaId": "ajBXnyzY88k",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-04T23:41:18.015Z",
+      "id": "2e2aWPDpPyU"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "usuario": "Manuel Alexis Lachira",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada",
+      "fecha": "2026-07-05T23:43:28.035Z",
+      "id": "ulozxQ0eQmE"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-05T23:48:36.855Z",
+      "id": "IhXm58BoItc"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
+      "fecha": "2026-07-05T23:48:43.840Z",
+      "id": "B265zhdO1UI"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Juan Pablo Pérez Torres",
+      "accion": "Finalizó mantenimiento",
+      "observacion": "El técnico marcó la incidencia como Reparada",
+      "fecha": "2026-07-05T23:51:48.522Z",
+      "id": "xdbRmNCZZ_0"
+    },
+    {
+      "incidenciaId": "aocKkbL9gE0",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Cerrada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-06T00:01:53.755Z",
+      "id": "j9BHrka1k8A"
+    },
+    {
+      "incidenciaId": "giLOQUgKuHk",
+      "usuario": "Juan Pablo Pérez Torres",
+      "accion": "Finalizó mantenimiento",
+      "observacion": "El técnico marcó la incidencia como Reparada",
+      "fecha": "2026-07-06T23:26:35.380Z",
+      "id": "f3oyd2S1kvU"
+    },
+    {
+      "incidenciaId": "H6Z7qRIfTDI",
+      "usuario": "Administrador Principal",
+      "accion": "Reportó incidencia",
+      "observacion": "Falla inicial reportada. Prioridad calculada: Crítica",
+      "fecha": "2026-07-08T15:09:04.340Z",
+      "id": "UQvVHweafuE"
+    },
+    {
+      "incidenciaId": "H6Z7qRIfTDI",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Revisada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-08T15:12:49.045Z",
+      "id": "PTG-6uIddlQ"
+    },
+    {
+      "incidenciaId": "H6Z7qRIfTDI",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
+      "fecha": "2026-07-08T15:13:09.238Z",
+      "id": "t3n82VdMgBg"
+    },
+    {
+      "incidenciaId": "H6Z7qRIfTDI",
+      "usuario": "Juan Pablo Pérez Torres",
+      "accion": "Finalizó mantenimiento",
+      "observacion": "El técnico marcó la incidencia como Reparada",
+      "fecha": "2026-07-08T15:13:22.594Z",
+      "id": "bPT46P-2Kw0"
+    },
+    {
+      "incidenciaId": "H6Z7qRIfTDI",
+      "usuario": "Administrador Principal",
+      "accion": "Cambió estado a Cerrada",
+      "observacion": "Cambio manual realizado por el administrador",
+      "fecha": "2026-07-08T15:13:30.948Z",
+      "id": "H62UrtVGFRw"
+    },
+    {
+      "incidenciaId": "ajBXnyzY88k",
+      "usuario": "Administrador Principal",
+      "accion": "Asignó técnico",
+      "observacion": "Asignado a Juan Pablo Pérez Torres (TEC001)",
+      "fecha": "2026-07-08T15:20:47.644Z",
+      "id": "q59oyqgP-js"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
