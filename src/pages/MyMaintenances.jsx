@@ -194,9 +194,15 @@ function MyMaintenances() {
                     </div>
                   </div>
                   <div className="card-footer bg-white border-top-0 pb-4 text-center">
-                    <Link to={`/incidencias/${inc.id}`} className="btn btn-primary w-100 shadow-sm">
-                      <i className="bi bi-box-arrow-in-right me-2"></i>Atender Mantenimiento
-                    </Link>
+                    {inc.estado === 'Reparada' || inc.estado === 'Cerrada' ? (
+                      <Link to={`/incidencias/${inc.id}`} className="btn btn-outline-secondary w-100 shadow-sm">
+                        <i className="bi bi-eye me-2"></i>Ver Detalles
+                      </Link>
+                    ) : (
+                      <Link to={`/incidencias/${inc.id}`} className="btn btn-primary w-100 shadow-sm">
+                        <i className="bi bi-box-arrow-in-right me-2"></i>Atender Mantenimiento
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>
