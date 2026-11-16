@@ -5,7 +5,7 @@ function Filters({ filtros, onFilterChange }) {
   };
 
   const laboratorios = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Administración'];
-  const prioridades = ['Alta', 'Media', 'Baja'];
+  const prioridades = ['Crítica', 'Alta', 'Media', 'Baja'];
   const estados = ['Reportada', 'Revisada', 'Asignada', 'Reparada', 'Cerrada'];
 
   return (

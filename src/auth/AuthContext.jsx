@@ -1,20 +1,21 @@
-import { createContext, useState, useEffect } from 'react';
+import { userName } from '../domain/maintenance';
+import { createContext, useState } from 'react';
 import { getUsuarios, getTecnicos } from '../services/api';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Al cargar, verificar si hay sesión en localStorage
-  useEffect(() => {
-    const storedUser = localStorage.getItem('usuario');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
-  }, []);
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('usuario') || 'null');
+      if (!stored) return null;
+      const profile = { ...stored, nombre: userName(stored) };
+      delete profile.contrasena;
+      return profile;
+    } catch { return null; }
+  });
+  const loading = false;
 
   const login = async (codigo, contrasena) => {
     try {
@@ -35,8 +36,10 @@ export function AuthProvider({ children }) {
           return { success: false, message: 'Cuenta de técnico inactiva' };
         }
         
-        setUser(foundUser);
-        localStorage.setItem('usuario', JSON.stringify(foundUser));
+        const profile = { ...foundUser, nombre: userName(foundUser) };
+        delete profile.contrasena;
+        setUser(profile);
+        localStorage.setItem('usuario', JSON.stringify(profile));
         return { success: true };
       } else {
         return { success: false, message: 'Credenciales inválidas' };

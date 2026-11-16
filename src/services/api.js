@@ -3,7 +3,7 @@
  * Utiliza Fetch API para operaciones CRUD de incidencias
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env?.VITE_API_URL || globalThis.__API_URL__ || 'http://localhost:3001';
 const API_URL = `${BASE_URL}/incidencias`;
 
 /** 
@@ -107,6 +107,9 @@ export const updateEquipo = async (id, data) => {
 };
 
 export const deleteEquipo = async (id) => {
+  const [incidents, maintenance] = await Promise.all([getIncidents(), getMantenimientos()]);
+  const equipment = await getEquipoById(id);
+  if (incidents.some(i => String(i.equipoId) === String(id) || i.codigoEquipo === equipment.codigoPatrimonial) || maintenance.some(m => String(m.equipoId) === String(id) || m.codigoEquipo === equipment.codigoPatrimonial)) throw new Error('El equipo tiene historial. Use el estado Retirado en lugar de eliminarlo.');
   const response = await fetch(`${EQUIPOS_URL}/${id}`, {
     method: "DELETE",
   });
@@ -219,4 +222,14 @@ export const deleteTecnico = async (id) => {
   });
   if (!response.ok) throw new Error("Error al eliminar técnico");
   return response.json();
+};
+
+// Inventory adapter: local prototype. A future university integration belongs in
+// the backend; no institutional secrets should be exposed through VITE variables.
+export const getEquipoByCodigo = async (codigo) => {
+  const code = String(codigo).trim();
+  if (!code) throw new Error('Ingrese el código de inventario.');
+  const matches = (await getEquipos()).filter(e => String(e.codigoPatrimonial) === code);
+  if (matches.length > 1) throw new Error('Código duplicado en el inventario. Contacte al administrador.');
+  return matches[0] || null;
 };

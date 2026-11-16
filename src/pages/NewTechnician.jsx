@@ -60,7 +60,7 @@ function NewTechnician() {
           <div className="spinner-border text-primary" role="status"></div>
         </div>
       ) : (
-        <TechnicianForm 
+        <TechnicianForm key={initialData?.id || 'new'}
           initialData={initialData} 
           onSubmit={handleSubmit} 
           isEditing={isEditing} 

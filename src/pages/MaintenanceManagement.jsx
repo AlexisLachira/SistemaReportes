@@ -1,3 +1,5 @@
+import { maintenanceState } from '../domain/maintenance';
+import ScheduledMaintenances from '../components/ScheduledMaintenances';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMantenimientos, getIncidents, getTecnicos } from '../services/api';
@@ -12,7 +14,7 @@ function MaintenanceManagement() {
     const fetchData = async () => {
       try {
         const [mantsData, incsData, tecsData] = await Promise.all([
-          getMantenimientos(),
+          getMantenimientos().then(items => items.filter(m => m.incidenciaId)),
           getIncidents(),
           getTecnicos()
         ]);
@@ -72,6 +74,8 @@ function MaintenanceManagement() {
         <p className="text-muted">Vista global de todos los mantenimientos asignados a los técnicos</p>
       </div>
 
+      <ScheduledMaintenances />
+      <h2 className="h5 mt-4">Atenciones vinculadas a incidencias</h2>
       <div className="card border-0 shadow-sm">
         <div className="card-body p-0">
           <div className="table-responsive">
@@ -82,7 +86,7 @@ function MaintenanceManagement() {
                   <th>Detalle</th>
                   <th>Técnico Asignado</th>
                   <th>Fecha Programada</th>
-                  <th>Estado Actual</th>
+                  <th>Estado del trabajo / Incidencia</th>
                   <th className="text-end px-3">Acción</th>
                 </tr>
               </thead>
@@ -112,7 +116,7 @@ function MaintenanceManagement() {
                         <td>{mant.fechaProgramada || mant.fechaInicio || 'Sin definir'}</td>
                         <td>
                           <span className={`badge ${getEstadoBadge(inc.estado)}`}>
-                            {inc.estado || 'Desconocido'}
+                            {maintenanceState(mant)} / {inc.estado || 'Sin estado'}
                           </span>
                         </td>
                         <td className="text-end px-3">

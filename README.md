@@ -1,4 +1,4 @@
-# Sistema de Reporte de Equipos Dañados
+# Sistema de Gestión de Mantenimiento de Equipos Informáticos
 
 Aplicación web académica desarrollada en **React** para la **Escuela Profesional de Ingeniería Informática de la Universidad Nacional de Piura (UNP)**. 
 
@@ -49,17 +49,9 @@ El sistema permite gestionar de manera integral las incidencias y reportes de eq
    ```
    *La aplicación estará disponible en `http://localhost:5173` (o el puerto que indique Vite)*
 
-## Usuarios de Prueba (Login)
+## Acceso al entorno de prueba
 
-Para explorar los distintos roles de la aplicación, puedes usar las siguientes credenciales:
-
-| Rol | Código/Usuario | Contraseña |
-|-----|----------------|------------|
-| **Administrador** | `admin` | `admin123` |
-| **Técnico 1** | `TEC001` | `tecnico123` |
-| **Técnico 2** | `TEC002` | `tecnico123` |
-| **Alumno 1** | `202300001` | `alumno123` |
-| **Alumno 2** | `202300002` | `alumno123` |
+Las cuentas se administran en la base de demostración. Las contraseñas no se publican en esta guía. Al crear técnicos, el administrador debe introducir una contraseña explícitamente.
 
 ## Estructura del Proyecto
 
@@ -77,3 +69,6 @@ src/
 
 ---
 *Desarrollado para la Universidad Nacional de Piura (UNP) - 2026*
+
+
+Consulta [CAMBIOS_MANTENIMIENTO.md](CAMBIOS_MANTENIMIENTO.md) para el flujo actualizado, los tipos de mantenimiento y las pruebas.

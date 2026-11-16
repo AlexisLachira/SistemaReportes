@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createEquipo, getEquipoById, updateEquipo } from '../services/api';
+import { getEquipos, createEquipo, getEquipoById, updateEquipo } from '../services/api';
 
 function EquipmentForm({ editId = null }) {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ function EquipmentForm({ editId = null }) {
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState({ type: '', text: '' });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!editId);
 
   const tiposEquipo = ['PC', 'Monitor', 'Impresora', 'Router', 'Switch', 'Proyector', 'Otro'];
   const laboratorios = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Administración'];
@@ -27,7 +27,6 @@ function EquipmentForm({ editId = null }) {
 
   useEffect(() => {
     if (editId) {
-      setLoading(true);
       getEquipoById(editId)
         .then((data) => {
           setFormData(data);
@@ -65,15 +64,22 @@ function EquipmentForm({ editId = null }) {
 
     setLoading(true);
     try {
+      const equipos = await getEquipos();
+      const codigo = formData.codigoPatrimonial.trim();
+      if (equipos.some(eq => eq.codigoPatrimonial === codigo && String(eq.id) !== String(editId))) {
+        setMessage({ type: 'error', text: 'El código de inventario ya está registrado.' });
+        return;
+      }
+      const payload = { ...formData, codigoPatrimonial: codigo };
       if (editId) {
-        await updateEquipo(editId, formData);
+        await updateEquipo(editId, payload);
         setMessage({ type: 'success', text: 'Equipo actualizado exitosamente' });
       } else {
-        await createEquipo(formData);
+        await createEquipo(payload);
         setMessage({ type: 'success', text: 'Equipo registrado exitosamente' });
       }
       setTimeout(() => navigate('/inventario'), 1500);
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Error de conexión con el servidor.' });
     } finally {
       setLoading(false);
@@ -107,9 +113,10 @@ function EquipmentForm({ editId = null }) {
               <input
                 type="text"
                 name="codigoPatrimonial"
+                readOnly={!!editId}
                 value={formData.codigoPatrimonial}
                 onChange={handleChange}
-                placeholder="Ej: PC-LAB01-001"
+                placeholder="Ej: 740899504221"
                 className={`form-control ${errors.codigoPatrimonial ? 'is-invalid' : ''}`}
               />
               {errors.codigoPatrimonial && <div className="invalid-feedback">{errors.codigoPatrimonial}</div>}

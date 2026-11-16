@@ -6,7 +6,7 @@ import {
 
 const COLORS = ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0', '#6c757d', '#212529'];
 
-function Statistics({ incidencias, mantenimientos, tecnicos, equipos }) {
+function Statistics({ incidencias, mantenimientos, tecnicos }) {
 
   // 1. Incidencias por Laboratorio
   const byLab = useMemo(() => {
@@ -62,7 +62,7 @@ function Statistics({ incidencias, mantenimientos, tecnicos, equipos }) {
   // 6. Ranking: Técnicos con más mantenimientos realizados
   const topTecnicos = useMemo(() => {
     const counts = mantenimientos.reduce((acc, mant) => {
-      if (mant.tecnicoId) {
+      if (mant.tecnicoId && mant.fechaFin) {
         acc[mant.tecnicoId] = (acc[mant.tecnicoId] || 0) + 1;
       }
       return acc;

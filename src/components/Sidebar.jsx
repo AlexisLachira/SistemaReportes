@@ -20,7 +20,7 @@ function Sidebar({ isOpen, onClose }) {
         <div className="sidebar-header d-flex justify-content-between align-items-center">
           <h5 className="mb-0 fw-bold d-flex align-items-center">
             <img src="/fiilogo.png" alt="Logo FII" style={{ height: '30px', marginRight: '10px' }} />
-            UNP Soporte
+            UNP Mantenimiento
           </h5>
           <button className="btn-close btn-close-white d-md-none" onClick={onClose}></button>
         </div>

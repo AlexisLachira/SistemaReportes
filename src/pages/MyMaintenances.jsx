@@ -1,4 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
+import { sameId } from '../domain/maintenance';
+import ScheduledMaintenances from '../components/ScheduledMaintenances';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getMantenimientos, getIncidents } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
@@ -6,7 +8,6 @@ import { AuthContext } from '../auth/AuthContext';
 function MyMaintenances() {
   const { user } = useContext(AuthContext);
   const [misMantenimientos, setMisMantenimientos] = useState([]);
-  const [filtrados, setFiltrados] = useState([]);
   const [incidencias, setIncidencias] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -20,7 +21,7 @@ function MyMaintenances() {
       if (!user) return;
       try {
         const [mantsData, incsData] = await Promise.all([
-          getMantenimientos(),
+          getMantenimientos().then(items => items.filter(m => m.incidenciaId)),
           getIncidents()
         ]);
         
@@ -29,7 +30,7 @@ function MyMaintenances() {
           incMap[inc.id] = inc;
         });
         
-        const asignados = mantsData.filter(m => m.tecnicoId === user.id);
+        const asignados = mantsData.filter(m => sameId(m.tecnicoId, user.id));
         
         const orderPriority = {
           'Asignada': 1,
@@ -57,7 +58,7 @@ function MyMaintenances() {
   }, [user]);
 
   // Aplicar filtros
-  useEffect(() => {
+  const filtrados = useMemo(() => {
     let resultado = [...misMantenimientos];
 
     if (filtroEstado) {
@@ -72,7 +73,7 @@ function MyMaintenances() {
       resultado = resultado.filter(mant => incidencias[mant.incidenciaId]?.laboratorio === filtroLaboratorio);
     }
 
-    setFiltrados(resultado);
+    return resultado;
   }, [misMantenimientos, incidencias, filtroEstado, filtroPrioridad, filtroLaboratorio]);
 
   const getEstadoBadge = (estado) => {
@@ -113,6 +114,8 @@ function MyMaintenances() {
         <p className="text-muted">Lista de trabajos de mantenimiento que te han sido asignados</p>
       </div>
 
+      <ScheduledMaintenances />
+      <h2 className="h5 mt-4">Atenciones vinculadas a incidencias</h2>
       {/* Panel de Filtros */}
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body">

@@ -10,7 +10,7 @@ function Navbar({ onToggleSidebar }) {
         <button className="btn btn-outline-light d-md-none me-2" onClick={onToggleSidebar}>
           <i className="bi bi-list"></i>
         </button>
-        <span className="navbar-brand mb-0 h1 d-none d-md-block">Sistema de Gestión de Incidencias</span>
+        <span className="navbar-brand mb-0 h1 d-none d-md-block">Sistema de Gestión de Mantenimiento de Equipos Informáticos</span>
         
         <div className="d-flex align-items-center ms-auto">
           {user && (

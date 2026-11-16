@@ -1,3 +1,4 @@
+import { maintenanceForEquipment, incidentForEquipment, sameId, maintenanceState } from '../domain/maintenance';
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
@@ -40,7 +41,7 @@ function EquipmentHistory() {
         }
 
         // Obtener todas las incidencias de este equipo
-        const eqIncs = allIncidencias.filter(i => i.codigoEquipo === codigo);
+        const eqIncs = allIncidencias.filter(i => incidentForEquipment(i, eq));
         
         // Seguridad:
         if (user.rol === 'alumno') {
@@ -51,9 +52,8 @@ function EquipmentHistory() {
           }
         } else if (user.rol === 'tecnico') {
           // Obtener los ids de incidencia de este equipo
-          const eqIncIds = eqIncs.map(i => i.id);
           // Verificar si el técnico ha hecho mantenimiento en alguna
-          const hasMaintained = allMants.some(m => eqIncIds.includes(m.incidenciaId) && m.tecnicoId === user.id);
+          const hasMaintained = allMants.some(m => maintenanceForEquipment(m, eq, allIncidencias) && String(m.tecnicoId) === String(user.id));
           if (!hasMaintained) {
             setError('Acceso denegado: No tienes permisos para ver el historial de este equipo.');
             return;
@@ -65,10 +65,10 @@ function EquipmentHistory() {
         setIncidencias(eqIncs);
         
         const eqIncIds = eqIncs.map(i => i.id);
-        const eqMants = allMants.filter(m => eqIncIds.includes(m.incidenciaId));
+        const eqMants = allMants.filter(m => maintenanceForEquipment(m, eq, allIncidencias));
         setMantenimientos(eqMants);
 
-        const eqHist = allHist.filter(h => eqIncIds.includes(h.incidenciaId));
+        const eqHist = allHist.filter(h => eqIncIds.some(id => sameId(id, h.incidenciaId)));
         setHistorialEventos(eqHist.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)));
 
       } catch (err) {
@@ -104,6 +104,7 @@ function EquipmentHistory() {
   // Cálculos estadísticos
   const totalIncidencias = incidencias.length;
   const prevCount = mantenimientos.filter(m => m.tipoMantenimiento === 'Preventivo').length;
+  const predCount = mantenimientos.filter(m => m.tipoMantenimiento === 'Predictivo').length;
   const corrCount = mantenimientos.filter(m => m.tipoMantenimiento === 'Correctivo' || !m.tipoMantenimiento).length;
   
   const cerrados = mantenimientos.filter(m => m.fechaInicio && m.fechaFin);
@@ -125,7 +126,7 @@ function EquipmentHistory() {
 
   // Combinación para la tabla
   let tablaData = mantenimientos.map(mant => {
-    const inc = incidencias.find(i => i.id === mant.incidenciaId);
+    const inc = incidencias.find(i => sameId(i.id, mant.incidenciaId)) || { id: null, fecha: mant.fechaProgramada, estado: maintenanceState(mant) };
     return { ...mant, inc };
   });
 
@@ -223,16 +224,17 @@ function EquipmentHistory() {
                     <p className="text-muted small text-uppercase fw-bold mb-0">Mant. Correctivos</p>
                   </div>
                 </div>
+                <div className="col-sm-6 col-md-4"><div className="p-3 bg-light rounded text-center border"><h3 className="fw-bold text-primary mb-0">{predCount}</h3><p className="text-muted small text-uppercase fw-bold mb-0">Mant. Predictivos</p></div></div>
                 <div className="col-sm-6">
                   <div className="p-3 bg-light rounded text-center h-100 border border-light shadow-sm">
                     <h3 className="fw-bold text-dark mb-0">{tiempoPromedio} días</h3>
-                    <p className="text-muted small text-uppercase fw-bold mb-0">Promedio Reparación</p>
+                    <p className="text-muted small text-uppercase fw-bold mb-0">Promedio de Atención</p>
                   </div>
                 </div>
                 <div className="col-sm-6">
                   <div className="p-3 bg-light rounded text-center h-100 border border-light shadow-sm">
                     <h3 className="fw-bold text-primary fs-4 mb-0 mt-2">{ultimaReparacion}</h3>
-                    <p className="text-muted small text-uppercase fw-bold mb-0">Última Reparación</p>
+                    <p className="text-muted small text-uppercase fw-bold mb-0">Último Mantenimiento</p>
                   </div>
                 </div>
               </div>
@@ -276,17 +278,17 @@ function EquipmentHistory() {
                   <label className="form-label small fw-bold text-muted mb-1">Tipo</label>
                   <select className="form-select form-select-sm" value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)}>
                     <option value="">Todos</option>
-                    <option value="Preventivo">Preventivo</option>
+                    <option value="Preventivo">Preventivo</option><option value="Predictivo">Predictivo</option>
                     <option value="Correctivo">Correctivo</option>
                   </select>
                 </div>
                 <div className="col-md-4">
-                  <label className="form-label small fw-bold text-muted mb-1">Estado Incidencia</label>
+                  <label className="form-label small fw-bold text-muted mb-1">Estado de incidencia / trabajo</label>
                   <select className="form-select form-select-sm" value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
                     <option value="">Todos</option>
                     <option value="Reparada">Reparada</option>
                     <option value="Cerrada">Cerrada</option>
-                    <option value="En mantenimiento">En mantenimiento</option>
+                    <option value="Programado">Programado</option><option value="En proceso">En proceso</option><option value="Finalizado">Finalizado</option><option value="En mantenimiento">En mantenimiento</option>
                   </select>
                 </div>
               </div>
@@ -305,7 +307,7 @@ function EquipmentHistory() {
                         <th>Fecha</th>
                         <th>Tipo</th>
                         <th>Técnico</th>
-                        <th>Tiempo Empleado</th>
+                        <th>Resultado / Actividades</th><th>Tiempo Empleado</th>
                         <th>Estado</th>
                         <th>Acción</th>
                       </tr>
@@ -313,14 +315,14 @@ function EquipmentHistory() {
                     <tbody>
                       {tablaData.map(d => (
                         <tr key={d.id}>
-                          <td className="px-3"><span className="badge bg-light text-primary border">#{d.inc.id}</span></td>
+                          <td className="px-3"><span className="badge bg-light text-primary border">{d.inc.id ? `#${d.inc.id}` : 'Sin incidencia'}</span></td>
                           <td><span className="small">{d.fechaInicio || d.inc.fecha}</span></td>
                           <td><span className={`badge ${d.tipoMantenimiento === 'Preventivo' ? 'bg-success' : 'bg-warning text-dark'}`}>{d.tipoMantenimiento || 'Correctivo'}</span></td>
                           <td><span className="small text-muted">{d.tecnicoId}</span></td>
-                          <td>{d.tiempoEmpleado ? `${d.tiempoEmpleado} hrs` : '-'}</td>
+                          <td>{d.resultado || d.actividades || '-'}</td><td>{d.tiempoEmpleado ? `${d.tiempoEmpleado} hrs` : '-'}</td>
                           <td><span className={`badge ${getEstadoBadge(d.inc.estado)}`}>{d.inc.estado}</span></td>
                           <td>
-                            <Link to={`/incidencias/${d.inc.id}`} className="btn btn-sm btn-outline-primary py-0">Ver</Link>
+                            {d.inc.id ? <Link to={`/incidencias/${d.inc.id}`} className="btn btn-sm btn-outline-primary py-0">Ver</Link> : <span>Sin incidencia</span>}
                           </td>
                         </tr>
                       ))}
@@ -341,7 +343,7 @@ function EquipmentHistory() {
               ) : (
                 <div className="position-relative">
                   <div className="position-absolute h-100 border-start border-2 border-primary" style={{ left: '1rem', top: 0 }}></div>
-                  {historialEventos.map((evento, index) => (
+                  {historialEventos.map((evento) => (
                     <div key={evento.id} className="position-relative mb-4" style={{ paddingLeft: '3rem' }}>
                       <div 
                         className="position-absolute bg-primary rounded-circle border border-3 border-white shadow"

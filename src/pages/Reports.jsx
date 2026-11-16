@@ -1,3 +1,4 @@
+import { maintenanceForEquipment, completedMaintenance, incidentForEquipment, sameId } from '../domain/maintenance';
 import { useState, useEffect, useContext, useMemo } from 'react';
 import { getIncidents, getEquipos, getMantenimientos, getTecnicos } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
@@ -50,7 +51,7 @@ function Reports() {
   const addPdfHeader = (doc, title) => {
     doc.setFontSize(16);
     doc.setTextColor(40);
-    doc.text("UNP Soporte - Sistema de Gestión de Mantenimiento", 14, 20);
+    doc.text("UNP - Sistema de Gestión de Mantenimiento", 14, 20);
     doc.setFontSize(12);
     doc.text(title, 14, 28);
     doc.setFontSize(9);
@@ -97,7 +98,7 @@ function Reports() {
       if (filters.equipo && inc.codigoEquipo !== filters.equipo) match = false;
       
       if (filters.tecnico) {
-        const mantsAsignados = mantenimientos.filter(m => m.incidenciaId === inc.id && m.tecnicoId === filters.tecnico);
+        const mantsAsignados = mantenimientos.filter(m => sameId(m.incidenciaId, inc.id) && sameId(m.tecnicoId, filters.tecnico));
         if (mantsAsignados.length === 0) match = false;
       }
       return match;
@@ -109,12 +110,12 @@ function Reports() {
     addPdfHeader(doc, "Reporte de Incidencias");
     
     const tableData = filteredIncidencias.map(inc => {
-      const mant = mantenimientos.find(m => m.incidenciaId === inc.id);
+      const mant = mantenimientos.find(m => sameId(m.incidenciaId, inc.id));
       let tecNombre = 'No asignado';
       let tiempoRes = 'N/A';
       
       if (mant) {
-        const t = tecnicos.find(t => t.id === mant.tecnicoId);
+        const t = tecnicos.find(t => sameId(t.id, mant.tecnicoId));
         if (t) tecNombre = `${t.nombres} ${t.apellidos}`;
         
         if (mant.fechaInicio && mant.fechaFin) {
@@ -150,8 +151,8 @@ function Reports() {
 
   const handleExportIncidenciasExcel = () => {
     const data = filteredIncidencias.map(inc => {
-      const mant = mantenimientos.find(m => m.incidenciaId === inc.id);
-      const t = mant ? tecnicos.find(t => t.id === mant.tecnicoId) : null;
+      const mant = mantenimientos.find(m => sameId(m.incidenciaId, inc.id));
+      const t = mant ? tecnicos.find(t => sameId(t.id, mant.tecnicoId)) : null;
       const tecNombre = t ? `${t.nombres} ${t.apellidos}` : 'No asignado';
       let tiempoRes = 'N/A';
       if (mant?.fechaInicio && mant?.fechaFin) {
@@ -179,15 +180,14 @@ function Reports() {
   // ==========================================
   const equiposData = useMemo(() => {
     return equipos.map(eq => {
-      const incsDelEquipo = incidencias.filter(i => i.codigoEquipo === eq.codigoPatrimonial);
-      const idsIncs = incsDelEquipo.map(i => i.id);
-      const mantsDelEquipo = mantenimientos.filter(m => idsIncs.includes(m.incidenciaId));
+      const incsDelEquipo = incidencias.filter(i => incidentForEquipment(i, eq));
+      const mantsDelEquipo = mantenimientos.filter(m => maintenanceForEquipment(m, eq, incidencias));
       
-      const lastMant = mantsDelEquipo.sort((a,b) => new Date(b.fechaFin || 0) - new Date(a.fechaFin || 0))[0];
+      const lastMant = mantsDelEquipo.filter(completedMaintenance).sort((a,b) => new Date(b.fechaFin || 0) - new Date(a.fechaFin || 0))[0];
 
       return {
         Código: eq.codigoPatrimonial,
-        Tipo: eq.tipo,
+        Tipo: eq.tipoEquipo,
         Marca: eq.marca,
         Modelo: eq.modelo,
         Laboratorio: eq.laboratorio,
@@ -205,7 +205,7 @@ function Reports() {
     const body = equiposData.map(e => Object.values(e));
     autoTable(doc, {
       startY: 42,
-      head: [['Código Patrimonial', 'Tipo', 'Marca', 'Modelo', 'Laboratorio', 'Estado']],
+      head: [['Código Patrimonial', 'Tipo', 'Marca', 'Modelo', 'Laboratorio', 'Estado', 'Incidencias', 'Mantenimientos', 'Ultimo mantenimiento']],
       body: body,
       theme: 'grid',
       styles: { fontSize: 9 }
@@ -221,7 +221,7 @@ function Reports() {
   // ==========================================
   const tecnicosData = useMemo(() => {
     return tecnicos.map(tec => {
-      const asignados = mantenimientos.filter(m => m.tecnicoId === tec.id);
+      const asignados = mantenimientos.filter(m => sameId(m.tecnicoId, tec.id));
       const finalizados = asignados.filter(m => m.fechaFin);
       
       let tiempoPromedio = 0;
@@ -268,8 +268,7 @@ function Reports() {
       const eqLab = equipos.filter(e => e.laboratorio === lab);
       const incLab = incidencias.filter(i => i.laboratorio === lab);
       
-      const incIds = incLab.map(i => i.id);
-      const mantsLab = mantenimientos.filter(m => incIds.includes(m.incidenciaId));
+      const mantsLab = mantenimientos.filter(m => completedMaintenance(m) && eqLab.some(eq => maintenanceForEquipment(m, eq, incidencias)));
 
       return {
         Laboratorio: lab,
@@ -421,7 +420,7 @@ function Reports() {
                     <option value="">Todas</option>
                     <option value="Baja">Baja</option>
                     <option value="Media">Media</option>
-                    <option value="Alta">Alta</option>
+                    <option value="Crítica">Crítica</option><option value="Alta">Alta</option>
                   </select>
                 </div>
               </div>

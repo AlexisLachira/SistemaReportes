@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function TechnicianForm({ initialData, onSubmit, isEditing }) {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => initialData || {
     codigo: '',
-    contrasena: 'tec123',
+    contrasena: '',
     rol: 'tecnico',
     dni: '',
     nombres: '',
@@ -16,12 +16,6 @@ function TechnicianForm({ initialData, onSubmit, isEditing }) {
     estado: 'Activo',
     fechaIngreso: new Date().toISOString().split('T')[0]
   });
-
-  useEffect(() => {
-    if (initialData) {
-      setFormData(initialData);
-    }
-  }, [initialData]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -88,7 +82,7 @@ function TechnicianForm({ initialData, onSubmit, isEditing }) {
             </div>
             <div className="col-md-3">
               <label className="form-label fw-semibold">Contraseña</label>
-              <input type="text" className="form-control" name="contrasena" required value={formData.contrasena} onChange={handleChange} />
+              <input type="password" className="form-control" name="contrasena" required value={formData.contrasena} onChange={handleChange} />
             </div>
             <div className="col-md-3">
               <label className="form-label fw-semibold">Fecha de Ingreso</label>

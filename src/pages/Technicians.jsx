@@ -1,32 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getTecnicos, deleteTecnico } from '../services/api';
 
 function Technicians() {
   const [tecnicos, setTecnicos] = useState([]);
-  const [filtrados, setFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
-    fetchTecnicos();
+    getTecnicos().then(setTecnicos).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  const fetchTecnicos = async () => {
-    setLoading(true);
-    try {
-      const data = await getTecnicos();
-      setTecnicos(data);
-      setFiltrados(data);
-    } catch (error) {
-      console.error('Error al cargar técnicos:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
+  const filtrados = useMemo(() => {
     let resultado = [...tecnicos];
     if (busqueda) {
       const b = busqueda.toLowerCase();
@@ -37,7 +23,7 @@ function Technicians() {
         t.especialidad.toLowerCase().includes(b)
       );
     }
-    setFiltrados(resultado);
+    return resultado;
   }, [busqueda, tecnicos]);
 
   const handleDelete = async (id) => {

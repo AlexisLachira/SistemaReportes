@@ -47,9 +47,9 @@ function Login() {
           </div>
           <h4 className="fw-bold text-primary mb-1 d-flex align-items-center justify-content-center">
             <img src="/fiilogo.png" alt="Logo FII" style={{ height: '40px', marginRight: '10px' }} />
-            UNP Soporte
+            UNP Mantenimiento
           </h4>
-          <p className="text-muted small">Sistema de Reporte de Equipos</p>
+          <p className="text-muted small">Sistema de Gestión de Mantenimiento de Equipos Informáticos</p>
         </div>
 
         {error && (

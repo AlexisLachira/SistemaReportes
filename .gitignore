@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local configuration, backups and test artifacts
+.env
+.env.*
+!.env.example
+.local-run/
+.implementation-backup-*/
+.rollback-backup-*/
+SistemaReportes-main/
+tests/.preview-stop
+tests/prueba-mantenimientos.jpg

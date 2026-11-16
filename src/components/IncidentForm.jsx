@@ -1,10 +1,16 @@
+import { sameId, userName } from '../domain/maintenance';
+import { reportIncident } from '../services/workflow';
+import EquipmentLookup from './EquipmentLookup';
 import { useState, useEffect, useContext, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createIncident, getIncidentById, updateIncident, getEquipos, getEquipoById, updateEquipo, createHistorial } from '../services/api';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { getIncidentById, updateIncident, getEquipos } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
 
 function IncidentForm({ editId = null }) {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const requestedId = params.get('equipoId');
+  const originId = params.get('origenMantenimientoId');
   const { user } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
@@ -15,7 +21,7 @@ function IncidentForm({ editId = null }) {
     estadoEquipo: '', 
     descripcion: '',
     fecha: new Date().toISOString().split('T')[0],
-    reportante: user ? user.nombre : '',
+    reportante: userName(user),
     prioridad: '',
     estado: 'Reportada',
     usuariosAfectados: '',
@@ -25,17 +31,24 @@ function IncidentForm({ editId = null }) {
   const [equiposList, setEquiposList] = useState([]);
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState({ type: '', text: '' });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!editId);
 
   // States for cascade selection
   const [selectedAmbiente, setSelectedAmbiente] = useState('');
   const [selectedTipo, setSelectedTipo] = useState('');
 
   useEffect(() => {
-    getEquipos().then(setEquiposList).catch(console.error);
+    getEquipos().then(equipos => {
+      setEquiposList(equipos);
+      if (!editId && requestedId && originId) {
+        const eq = equipos.find(e => sameId(e.id, requestedId));
+        if (!eq) { setMessage({ type: 'error', text: 'Equipo no encontrado.' }); return; }
+        setSelectedAmbiente(eq.laboratorio); setSelectedTipo(eq.tipoEquipo);
+        setFormData(prev => ({ ...prev, equipoId: eq.id, codigoEquipo: eq.codigoPatrimonial, laboratorio: eq.laboratorio, tipoEquipo: eq.tipoEquipo, origenMantenimientoId: originId }));
+      }
+    }).catch(() => setMessage({ type: 'error', text: 'No se pudo consultar el inventario.' }));
 
     if (editId) {
-      setLoading(true);
       getIncidentById(editId)
         .then((data) => {
           if (data.estado === 'Cerrada') {
@@ -49,11 +62,12 @@ function IncidentForm({ editId = null }) {
         .catch(() => setMessage({ type: 'error', text: 'Error al cargar la incidencia' }))
         .finally(() => setLoading(false));
     }
-  }, [editId]);
+  }, [editId, requestedId, originId]);
 
-  const ambientes = useMemo(() => [...new Set(equiposList.filter(e => e.estado === 'Disponible').map(e => e.laboratorio))], [equiposList]);
-  const tiposDisponibles = useMemo(() => [...new Set(equiposList.filter(e => e.laboratorio === selectedAmbiente && e.estado === 'Disponible').map(e => e.tipoEquipo))], [equiposList, selectedAmbiente]);
-  const equiposDisponibles = useMemo(() => equiposList.filter(e => e.laboratorio === selectedAmbiente && e.tipoEquipo === selectedTipo && e.estado === 'Disponible'), [equiposList, selectedAmbiente, selectedTipo]);
+  const selectable = useMemo(() => equiposList.filter(e => e.estado === 'Disponible' || ((editId || originId) && sameId(e.id, formData.equipoId))), [equiposList, editId, originId, formData.equipoId]);
+  const ambientes = useMemo(() => [...new Set(selectable.map(e => e.laboratorio))], [selectable]);
+  const tiposDisponibles = useMemo(() => [...new Set(selectable.filter(e => e.laboratorio === selectedAmbiente).map(e => e.tipoEquipo))], [selectable, selectedAmbiente]);
+  const equiposDisponibles = useMemo(() => selectable.filter(e => e.laboratorio === selectedAmbiente && e.tipoEquipo === selectedTipo), [selectable, selectedAmbiente, selectedTipo]);
 
   const calculatePriority = (equipo, users, disruption) => {
     if (!equipo || !users || !disruption) return '';
@@ -92,7 +106,7 @@ function IncidentForm({ editId = null }) {
       setSelectedTipo(value);
       setFormData({ ...formData, codigoEquipo: '', equipoId: '', tipoEquipo: value, prioridad: '' });
     } else if (level === 'equipo') {
-      const selectedEquipo = equiposList.find(eq => eq.id === value);
+      const selectedEquipo = equiposList.find(eq => String(eq.id) === String(value));
       if (selectedEquipo) {
         const priority = calculatePriority(selectedEquipo, formData.usuariosAfectados, formData.impideActividades);
         setFormData({
@@ -152,29 +166,12 @@ function IncidentForm({ editId = null }) {
         await updateIncident(editId, dataToSave);
         setMessage({ type: 'success', text: 'Incidencia actualizada exitosamente' });
       } else {
-        const newInc = await createIncident(dataToSave);
-        
-        await createHistorial({
-          incidenciaId: newInc.id,
-          usuario: user.nombre,
-          accion: 'Reportó incidencia',
-          observacion: 'Falla inicial reportada. Prioridad calculada: ' + dataToSave.prioridad
-        });
-
-        if (formData.equipoId) {
-          try {
-            const eqData = await getEquipoById(formData.equipoId);
-            await updateEquipo(formData.equipoId, { ...eqData, estado: 'Dañado' });
-          } catch (e) {
-            console.error('Error al actualizar el estado del equipo', e);
-          }
-        }
-
+        await reportIncident(dataToSave, user);
         setMessage({ type: 'success', text: 'Incidencia registrada exitosamente' });
       }
       setTimeout(() => navigate('/incidencias'), 1500);
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Error de conexión con el servidor.' });
+    } catch (err) {
+      setMessage({ type: 'error', text: err.message || 'Error al guardar la incidencia.' });
     } finally {
       setLoading(false);
     }
@@ -202,6 +199,20 @@ function IncidentForm({ editId = null }) {
 
         <form onSubmit={handleSubmit}>
           <fieldset disabled={message.type === 'error' && message.text.includes('cerrada')}>
+          {!editId && !originId && <EquipmentLookup onClear={() => {
+            setSelectedAmbiente(''); setSelectedTipo('');
+            setFormData(prev => ({ ...prev, equipoId: '', codigoEquipo: '', laboratorio: '', tipoEquipo: '', prioridad: '' }));
+            setMessage({ type: '', text: '' });
+          }} onSelect={(eq) => {
+            if (eq.estado !== 'Disponible') {
+              setMessage({ type: 'error', text: 'El equipo no está disponible para una nueva incidencia. Revise sus incidencias existentes.' });
+              return;
+            }
+            setSelectedAmbiente(eq.laboratorio);
+            setSelectedTipo(eq.tipoEquipo);
+            setFormData(prev => ({ ...prev, equipoId: eq.id, codigoEquipo: eq.codigoPatrimonial, laboratorio: eq.laboratorio, tipoEquipo: eq.tipoEquipo, estadoEquipo: eq.estado, prioridad: calculatePriority(eq, prev.usuariosAfectados, prev.impideActividades) }));
+            setMessage({ type: 'success', text: `Equipo cargado: ${eq.codigoPatrimonial} - ${eq.marca} ${eq.modelo}` });
+          }} />}
           <div className="row g-4">
             
             {/* Paso 1: Ambiente */}
@@ -211,7 +222,7 @@ function IncidentForm({ editId = null }) {
                 value={selectedAmbiente}
                 onChange={(e) => handleCascadeChange('ambiente', e.target.value)}
                 className={`form-select ${errors.ambiente ? 'is-invalid' : ''}`}
-                disabled={!!editId}
+                disabled={!!editId || !!originId}
               >
                 <option value="">Seleccione ambiente...</option>
                 {ambientes.map(amb => <option key={amb} value={amb}>{amb}</option>)}
@@ -226,7 +237,7 @@ function IncidentForm({ editId = null }) {
                 value={selectedTipo}
                 onChange={(e) => handleCascadeChange('tipo', e.target.value)}
                 className={`form-select ${errors.tipo ? 'is-invalid' : ''}`}
-                disabled={!selectedAmbiente || !!editId}
+                disabled={!selectedAmbiente || !!editId || !!originId}
               >
                 <option value="">Seleccione tipo...</option>
                 {tiposDisponibles.map(t => <option key={t} value={t}>{t}</option>)}
@@ -242,7 +253,7 @@ function IncidentForm({ editId = null }) {
                 value={formData.equipoId}
                 onChange={(e) => handleCascadeChange('equipo', e.target.value)}
                 className={`form-select ${errors.equipoId ? 'is-invalid' : ''}`}
-                disabled={!selectedTipo || !!editId}
+                disabled={!selectedTipo || !!editId || !!originId}
               >
                 <option value="">Seleccione equipo...</option>
                 {equiposDisponibles.map(eq => (

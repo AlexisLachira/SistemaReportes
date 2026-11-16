@@ -1,3 +1,4 @@
+import { preventiveSchedule, equipmentCanBeScheduled } from '../domain/maintenance';
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { getEquipos, deleteEquipo, getIncidents, getMantenimientos } from '../services/api';
@@ -15,6 +16,7 @@ function EquipmentList() {
   const [filtroLab, setFiltroLab] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
+  const [filtroSeguimiento, setFiltroSeguimiento] = useState('');
 
   const cargarDatos = async () => {
     setLoading(true);
@@ -35,7 +37,7 @@ function EquipmentList() {
   };
 
   useEffect(() => {
-    cargarDatos();
+    void Promise.resolve().then(cargarDatos);
   }, []);
 
   const handleDelete = async (id) => {
@@ -44,7 +46,7 @@ function EquipmentList() {
         await deleteEquipo(id);
         cargarDatos();
       } catch (error) {
-        console.error('Error al eliminar equipo:', error);
+        window.alert(error.message);
       }
     }
   };
@@ -71,11 +73,11 @@ function EquipmentList() {
 
   const getMantenimientoBadge = (estado) => {
     switch (estado) {
-      case 'Al día': return 'bg-success';
-      case 'Próximo mantenimiento': return 'bg-info text-dark';
-      case 'Requiere mantenimiento': return 'bg-warning text-dark';
-      case 'Recomendado reemplazo': return 'bg-danger';
-      case 'Requiere evaluación': return 'bg-dark text-white'; 
+      case 'Preventivo al día': return 'bg-success';
+      case 'Preventivo próximo': return 'bg-info text-dark';
+      case 'Preventivo vencido': return 'bg-warning text-dark';
+      case 'Preventivo en proceso': return 'bg-danger';
+      case 'Preventivo programado': return 'bg-dark text-white'; 
       default: return 'bg-secondary';
     }
   };
@@ -94,43 +96,12 @@ function EquipmentList() {
     return `${años > 0 ? años + ' años' : ''} ${meses > 0 ? meses + ' meses' : ''}`.trim();
   };
 
-  const calcularEstadoMantenimiento = (equipo) => {
-    const eqIncidencias = incidencias.filter(i => i.codigoEquipo === equipo.codigoPatrimonial);
-    const eqMantenimientos = mantenimientos.filter(m => eqIncidencias.find(i => i.id === m.incidenciaId));
-    
-    // Obtener antigüedad en años
-    const ac = new Date();
-    const fa = new Date(equipo.fechaAdquisicion || ac);
-    const diffTime = Math.abs(ac - fa);
-    const añosAntiguedad = diffTime / (1000 * 60 * 60 * 24 * 365.25);
-
-    // Obtener meses desde último mantenimiento
-    let mesesSinMantenimiento = 999;
-    if (eqMantenimientos.length > 0) {
-      const ultimoMant = eqMantenimientos.sort((a, b) => new Date(b.fechaFin || 0) - new Date(a.fechaFin || 0))[0];
-      if (ultimoMant.fechaFin) {
-        const fm = new Date(ultimoMant.fechaFin);
-        mesesSinMantenimiento = (ac.getFullYear() - fm.getFullYear()) * 12 + (ac.getMonth() - fm.getMonth());
-      }
-    } else {
-      mesesSinMantenimiento = añosAntiguedad * 12;
-    }
-
-    if (añosAntiguedad >= 5) return 'Recomendado reemplazo';
-    if (eqIncidencias.length >= 3 || añosAntiguedad >= 4) return 'Requiere evaluación';
-    if (mesesSinMantenimiento >= 6) return 'Requiere mantenimiento';
-    if (mesesSinMantenimiento >= 4) return 'Próximo mantenimiento';
-
-    return 'Al día';
-  };
-
   const laboratorios = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Administración'];
   const tipos = ['PC', 'Monitor', 'Impresora', 'Router', 'Switch', 'Proyector', 'Otro'];
-  const estados = ['Disponible', 'En mantenimiento', 'Dañado', 'Retirado'];
 
   const equiposProcesados = equipos.map(e => ({
     ...e,
-    estadoMantenimiento: calcularEstadoMantenimiento(e),
+    seguimiento: preventiveSchedule(e, mantenimientos, incidencias),
     antiguedadTexto: calcularAntiguedad(e.fechaAdquisicion)
   }));
 
@@ -139,7 +110,8 @@ function EquipmentList() {
       (filtroCodigo === '' || e.codigoPatrimonial.toLowerCase().includes(filtroCodigo.toLowerCase())) &&
       (filtroLab === '' || e.laboratorio === filtroLab) &&
       (filtroTipo === '' || e.tipoEquipo === filtroTipo) &&
-      (filtroEstado === '' || e.estado === filtroEstado) // Changed to use e.estado (operational)
+      (filtroEstado === '' || e.estado === filtroEstado) &&
+      (!filtroSeguimiento || e.seguimiento.label === filtroSeguimiento) // Changed to use e.estado (operational)
     );
   });
 
@@ -176,17 +148,12 @@ function EquipmentList() {
           <div className="col-12 col-md-3">
             <select className="form-select form-select-sm" value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
               <option value="">Todos los estados</option>
-              <option value="Operativo">Operativo</option>
-              <option value="Requiere mantenimiento">Requiere mantenimiento</option>
-              <option value="Requiere evaluación">Requiere evaluación</option>
-              <option value="Recomendado reemplazo">Recomendado reemplazo</option>
-              <option value="En mantenimiento">En mantenimiento</option>
-              <option value="Averiado">Averiado</option>
-              <option value="Fuera de servicio">Fuera de servicio</option>
+              {['Disponible', 'En mantenimiento', 'Dañado', 'Retirado'].map(s => <option key={s}>{s}</option>)}
             </select>
           </div>
         </div>
 
+        <label className="form-label small">Seguimiento preventivo<select className="form-select form-select-sm mb-3" value={filtroSeguimiento} onChange={e => setFiltroSeguimiento(e.target.value)}><option value="">Todos</option>{['Preventivo vencido', 'Preventivo próximo', 'Preventivo programado', 'Preventivo en proceso', 'Preventivo al día', 'Sin programación', 'No aplica (retirado)'].map(s => <option key={s}>{s}</option>)}</select></label>
         {loading ? (
           <div className="text-center py-4">
             <div className="spinner-border text-primary" role="status">
@@ -205,21 +172,21 @@ function EquipmentList() {
                   <th>Criticidad</th>
                   <th>Antigüedad</th>
                   <th>Operativo</th>
-                  <th>Mantenimiento</th>
+                  <th>Seguimiento de mantenimiento</th><th>Evaluación del equipo</th>
                   <th className="text-end">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {equiposFiltrados.length === 0 ? (
                   <tr>
-                    <td colSpan={user?.rol === 'administrador' ? "6" : "5"} className="text-center text-muted py-4">
+                    <td colSpan="10" className="text-center text-muted py-4">
                       No se encontraron equipos.
                     </td>
                   </tr>
                 ) : (
                   equiposFiltrados.map((equipo) => (
                     <tr key={equipo.id}>
-                      <td><span className="fw-semibold text-primary">{equipo.codigoPatrimonial}</span></td>
+                      <td><span className="fw-semibold text-primary">{equipo.codigoPatrimonial}</span>{equipo.codigoInventarioFicticio && <small className="d-block text-muted">Código ficticio</small>}</td>
                       <td>{equipo.tipoEquipo}</td>
                       <td>{equipo.marca} {equipo.modelo}</td>
                       <td>{equipo.laboratorio}</td>
@@ -235,16 +202,19 @@ function EquipmentList() {
                         </span>
                       </td>
                       <td>
-                        <span className={`badge ${getMantenimientoBadge(equipo.estadoMantenimiento)}`}>
-                          {equipo.estadoMantenimiento}
+                        <span className={`badge ${getMantenimientoBadge(equipo.seguimiento.label)}`}>
+                          {equipo.seguimiento.label}
                         </span>
+                        <small className="d-block text-muted">{equipo.seguimiento.next ? `Fecha: ${equipo.seguimiento.next}` : 'Sin fecha prevista'}</small>
                       </td>
+                      <td><small>{new Date().getFullYear() - new Date(equipo.fechaAdquisicion).getFullYear() >= 5 ? 'Evaluar reemplazo' : incidencias.filter(i => String(i.equipoId) === String(equipo.id) || i.codigoEquipo === equipo.codigoPatrimonial).length >= 3 ? 'Revisar fallas recurrentes' : 'Sin recomendación'}</small></td>
                       <td className="text-end">
                         <Link to={`/equipo/${equipo.codigoPatrimonial}/historial`} className="btn btn-sm btn-outline-info me-2" title="Ver Historial">
                           <i className="bi bi-clock-history"></i>
                         </Link>
                         {user?.rol === 'administrador' && (
                           <>
+                            {equipmentCanBeScheduled(equipo, incidencias) && <Link to={`/mantenimientos?equipoId=${encodeURIComponent(equipo.id)}`} className="btn btn-sm btn-outline-success me-2" title="Programar mantenimiento"><i className="bi bi-calendar-plus"></i></Link>}
                             <Link to={`/editar-equipo/${equipo.id}`} className="btn btn-sm btn-outline-primary me-2" title="Editar">
                               <i className="bi bi-pencil"></i>
                             </Link>

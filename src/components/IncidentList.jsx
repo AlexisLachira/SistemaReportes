@@ -1,44 +1,37 @@
-import { useState, useEffect, useContext } from 'react';
+import { removeIncident, changeIncidentState } from '../services/workflow';
+import { useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { getIncidents, deleteIncident, updateIncident } from '../services/api';
+import { getIncidents, getMantenimientos } from '../services/api';
 import Filters from './Filters';
 import { AuthContext } from '../auth/AuthContext';
 
 function IncidentList() {
   const [incidencias, setIncidencias] = useState([]);
-  const [filtradas, setFiltradas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({ busqueda: '', laboratorio: '', prioridad: '', estado: '' });
   const [confirmDelete, setConfirmDelete] = useState(null);
   
   const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchIncidencias();
-  }, []);
-
-  const fetchIncidencias = async () => {
+  const fetchIncidencias = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getIncidents();
-      const dataRole = user.rol === 'administrador' 
+      const assigned = user.rol === 'tecnico' ? (await getMantenimientos()).filter(m => String(m.tecnicoId) === String(user.id)).map(m => String(m.incidenciaId)) : [];
+      const dataRole = user.rol === 'tecnico' ? data.filter(i => assigned.includes(String(i.id))) : user.rol === 'administrador' 
         ? data 
         : data.filter(i => i.reportante === user.nombre || i.reportante === user.codigo);
       setIncidencias(dataRole);
-      setFiltradas(dataRole);
     } catch (error) {
       console.error('Error al cargar incidencias:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  useEffect(() => {
-    console.log("=== DEBUG: ESTADO REAL DE INCIDENCIAS ===");
-    incidencias.forEach(inc => {
-      console.log(`[ORIGINAL DB] ID: ${inc.id} | Código: ${inc.codigoEquipo} | Estado Real: ${inc.estado}`);
-    });
+  useEffect(() => { void Promise.resolve().then(fetchIncidencias); }, [fetchIncidencias]);
 
+  const filtradas = useMemo(() => {
     let resultado = [...incidencias];
     if (filtros.busqueda) {
       resultado = resultado.filter(i => 
@@ -62,35 +55,22 @@ function IncidentList() {
       return dateB - dateA;
     });
 
-    console.log(`=== DEBUG: FILTRO APLICADO ===\nTotal en db.json (original): ${incidencias.length}\nTotal después del filtro (UI): ${resultado.length}`);
-    resultado.forEach(inc => {
-      console.log(`[FILTRADA UI] ID: ${inc.id} | Estado a mostrar: ${inc.estado}`);
-    });
-
-    setFiltradas(resultado);
+    return resultado;
   }, [filtros, incidencias]);
 
   const handleChangeEstado = async (incidencia, nuevoEstado) => {
     try {
-      await updateIncident(incidencia.id, { ...incidencia, estado: nuevoEstado });
-      await import('../services/api').then(({ createHistorial }) => {
-        createHistorial({
-          incidenciaId: incidencia.id,
-          usuario: user.nombre,
-          accion: `Cambió estado a ${nuevoEstado}`,
-          observacion: 'Actualización de estado desde listado'
-        });
-      });
+      await changeIncidentState(incidencia.id, nuevoEstado, user);
       setIncidencias(incidencias.map(i => i.id === incidencia.id ? { ...i, estado: nuevoEstado } : i));
-    } catch (error) {}
+    } catch (error) { window.alert(error.message); }
   };
 
   const handleDelete = async (id) => {
     try {
-      await deleteIncident(id);
+      await removeIncident(id, user);
       setIncidencias(incidencias.filter(i => i.id !== id));
       setConfirmDelete(null);
-    } catch (error) {}
+    } catch (error) { window.alert(error.message); }
   };
 
     const getPrioridadBadge = (prioridad) => {
@@ -187,11 +167,11 @@ function IncidentList() {
                             className={`badge border-0 ${getEstadoBadge(inc.estado)} form-select-sm`}
                             style={{ cursor: 'pointer', appearance: 'none' }}
                           >
-                            <option value="Reportada" className="bg-white text-dark">Reportada</option>
-                            <option value="Revisada" className="bg-white text-dark">Revisada</option>
+                            <option value="Reportada" disabled={inc.estado !== 'Reportada'} className="bg-white text-dark">Reportada</option>
+                            <option value="Revisada" disabled={!['Reportada', 'Revisada'].includes(inc.estado)} className="bg-white text-dark">Revisada</option>
                             <option value="Asignada" className="bg-white text-dark" disabled>Asignada</option>
                             <option value="Reparada" className="bg-white text-dark" disabled>Reparada</option>
-                            <option value="Cerrada" className="bg-white text-dark">Cerrada</option>
+                            <option value="Cerrada" disabled={inc.estado !== 'Reparada'} className="bg-white text-dark">Cerrada</option>
                           </select>
                         ) : (
                           <span className={`badge ${getEstadoBadge(inc.estado)}`}>{inc.estado}</span>

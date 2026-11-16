@@ -18,7 +18,7 @@ function NewIncident() {
         </p>
       </div>
 
-      <IncidentForm editId={id ? Number(id) : null} />
+      <IncidentForm editId={id || null} />
     </div>
   );
 }

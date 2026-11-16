@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "json-server --watch src/data/db.json --port 3001"
+    "server": "node backend/dev-server.mjs",
+    "test": "node --test tests/workflow.test.mjs"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
@@ -17,9 +18,11 @@
     "jspdf-autotable": "^5.0.8",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-is": "^19.3.1",
     "react-router-dom": "^7.18.0",
     "recharts": "^3.9.2",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "lowdb": "^7.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

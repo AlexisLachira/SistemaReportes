@@ -1,6 +1,7 @@
+import { removeIncident, assignIncident, changeIncidentState } from '../services/workflow';
 import { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getIncidentById, updateIncident, deleteIncident, getTecnicos, createMantenimiento, createHistorial, getMantenimientos, getEquipos, updateEquipo } from '../services/api';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getIncidentById, getTecnicos, getMantenimientos } from '../services/api';
 import { AuthContext } from '../auth/AuthContext';
 import MaintenanceTracker from '../components/MaintenanceTracker';
 import IncidentHistory from '../components/IncidentHistory';
@@ -13,6 +14,7 @@ function IncidentDetails() {
   const [tecnicos, setTecnicos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [actionError, setActionError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const { user } = useContext(AuthContext);
 
@@ -28,14 +30,15 @@ function IncidentDetails() {
         setIncidencia(data);
 
         const mants = await getMantenimientos();
-        const mant = mants.find(m => m.incidenciaId === id);
-        if (mant) setMantenimiento(mant);
+        const mant = mants.find(m => String(m.incidenciaId) === String(id));
+        setMantenimiento(mant || null);
+        setError(null);
 
         if (user.rol === 'administrador') {
           const tecs = await getTecnicos();
           setTecnicos(tecs);
         }
-      } catch (err) {
+      } catch {
         setError('No se pudo encontrar la incidencia solicitada.');
       } finally {
         setLoading(false);
@@ -48,35 +51,19 @@ function IncidentDetails() {
 
   const handleChangeEstado = async (nuevoEstado) => {
     try {
-      const updated = await updateIncident(id, { ...incidencia, estado: nuevoEstado });
-      await createHistorial({
-        incidenciaId: id,
-        usuario: user.nombre,
-        accion: `Cambió estado a ${nuevoEstado}`,
-        observacion: 'Cambio manual realizado por el administrador'
-      });
-      
-      // Update equipment status if closed
-      if (nuevoEstado === 'Cerrada') {
-        const equipos = await getEquipos();
-        const eq = equipos.find(e => e.codigoPatrimonial === incidencia.codigoEquipo);
-        if (eq) {
-          await updateEquipo(eq.id, { ...eq, estado: 'Disponible' });
-        }
-      }
-
+      const updated = await changeIncidentState(id, nuevoEstado, user);
       setIncidencia(updated);
       reloadData();
     } catch (err) {
-      console.error(err);
+      setActionError(err.message);
     }
   };
 
   const handleDelete = async () => {
     try {
-      await deleteIncident(id);
+      await removeIncident(id, user);
       navigate('/incidencias');
-    } catch (err) {}
+    } catch (err) { setActionError(err.message); }
   };
 
   const handleAssign = async (e) => {
@@ -87,40 +74,11 @@ function IncidentDetails() {
     }
     setAssignLoading(true);
     try {
-      const tecSeleccionado = tecnicos.find(t => t.id === assignForm.tecnicoId);
-      const nombreTec = tecSeleccionado ? `${tecSeleccionado.nombres} ${tecSeleccionado.apellidos}` : assignForm.tecnicoId;
-
-      const newMant = await createMantenimiento({
-        incidenciaId: id,
-        equipoId: incidencia.equipoId || '',
-        tecnicoId: assignForm.tecnicoId,
-        nombreTecnico: nombreTec,
-        fechaProgramada: assignForm.fechaProgramada,
-        tipoMantenimiento: assignForm.tipoMantenimiento,
-        observacionesIniciales: assignForm.observacionesIniciales,
-        fechaInicio: '',
-        diagnostico: '',
-        actividades: '',
-        repuestos: '',
-        observacionesTecnico: '',
-        tiempoEmpleado: '',
-        fechaFin: ''
-      });
-      
-      const updated = await updateIncident(id, { ...incidencia, estado: 'Asignada' });
-      
-      await createHistorial({
-        incidenciaId: id,
-        usuario: user.nombre,
-        accion: 'Asignó técnico',
-        observacion: `Asignado a ${nombreTec} (${assignForm.tecnicoId})`
-      });
-
-      setIncidencia(updated);
+      const newMant = await assignIncident(id, assignForm, user);
       setMantenimiento(newMant);
       reloadData();
     } catch (error) {
-      console.error(error);
+      setActionError(error.message);
     } finally {
       setAssignLoading(false);
     }
@@ -169,6 +127,7 @@ function IncidentDetails() {
 
   return (
     <div>
+      {actionError && <div className="alert alert-danger" role="alert">{actionError}</div>}
       <div className="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
           <h1 className="h3 fw-bold text-primary mb-1">
@@ -323,8 +282,8 @@ function IncidentDetails() {
                     onChange={(e) => setAssignForm({...assignForm, tipoMantenimiento: e.target.value})}
                   >
                     <option value="Correctivo">Correctivo</option>
-                    <option value="Preventivo">Preventivo</option>
-                    <option value="Predictivo">Predictivo</option>
+                    
+                    
                   </select>
                 </div>
                 <div className="col-12">
@@ -350,6 +309,7 @@ function IncidentDetails() {
 
       {mantenimiento && (
         <MaintenanceTracker 
+          key={mantenimiento.id}
           mantenimiento={mantenimiento} 
           incidencia={incidencia} 
           onUpdate={reloadData}

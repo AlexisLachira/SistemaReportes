@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { updateMantenimiento, updateIncident, createHistorial } from '../services/api';
+import { workOnIncident } from '../services/workflow';
 import { AuthContext } from '../auth/AuthContext';
 
 function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
@@ -19,7 +19,7 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
   const isTecnico = user?.rol === 'tecnico';
   const isActive = incidencia.estado === 'Asignada';
   
-  const canEdit = isTecnico && isActive && mantenimiento.tecnicoId === user.id;
+  const canEdit = isTecnico && isActive && String(mantenimiento.tecnicoId) === String(user.id);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,22 +29,13 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
     e.preventDefault();
     setLoading(true);
     try {
-      await updateMantenimiento(mantenimiento.id, {
-        ...mantenimiento,
-        ...formData
-      });
-      await createHistorial({
-        incidenciaId: incidencia.id,
-        usuario: user.nombre,
-        accion: 'Actualizó progreso',
-        observacion: 'El técnico guardó avances en el mantenimiento'
-      });
+      await workOnIncident(mantenimiento.id, 'save', formData, user);
       setMessage('Progreso guardado correctamente');
       setTimeout(() => setMessage(''), 3000);
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error(error);
-      setMessage('Error al guardar');
+      setMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -55,56 +46,23 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
     
     setLoading(true);
     try {
-      // 1. Update mantenimiento with end date
-      await updateMantenimiento(mantenimiento.id, {
-        ...mantenimiento,
-        ...formData,
-        fechaFin: new Date().toISOString().split('T')[0]
-      });
-      
-      // 2. Update incident status
-      await updateIncident(incidencia.id, {
-        ...incidencia,
-        estado: 'Reparada'
-      });
-
-      // 3. Add to history
-      await createHistorial({
-        incidenciaId: incidencia.id,
-        usuario: user.nombre,
-        accion: 'Finalizó mantenimiento',
-        observacion: 'El técnico marcó la incidencia como Reparada'
-      });
-      
+      await workOnIncident(mantenimiento.id, 'finish', formData, user);
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error(error);
-      alert('Error al finalizar el mantenimiento');
+      setMessage(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChangeStatus = async (nuevoEstado) => {
+  const handleStart = async () => {
     setLoading(true);
     try {
-      await updateIncident(incidencia.id, {
-        ...incidencia,
-        estado: nuevoEstado
-      });
-      
-      await createHistorial({
-        incidenciaId: incidencia.id,
-        usuario: user.nombre,
-        accion: `Cambió estado a ${nuevoEstado}`,
-        observacion: 'Actualización rápida de estado por el técnico'
-      });
-      if (onUpdate) onUpdate();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+      await workOnIncident(mantenimiento.id, 'start', {}, user);
+      onUpdate?.();
+    } catch (err) { setMessage(err.message); }
+    finally { setLoading(false); }
   };
 
   return (
@@ -114,7 +72,7 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
       </div>
       <div className="card-body">
         
-        {message && <div className="alert alert-success py-2">{message}</div>}
+        {message && <div className="alert alert-info py-2">{message}</div>}
 
         <div className="row g-3 mb-4 text-muted small">
           <div className="col-md-4">
@@ -145,7 +103,7 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
                 rows="2"
                 value={formData.diagnostico}
                 onChange={handleChange}
-                disabled={!canEdit}
+                disabled={!canEdit || !mantenimiento.fechaInicio}
                 placeholder="Describa la causa raíz del problema..."
               ></textarea>
             </div>
@@ -158,7 +116,7 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
                 rows="3"
                 value={formData.actividades}
                 onChange={handleChange}
-                disabled={!canEdit}
+                disabled={!canEdit || !mantenimiento.fechaInicio}
                 placeholder="¿Qué acciones se tomaron?"
               ></textarea>
             </div>
@@ -171,7 +129,7 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
                 rows="3"
                 value={formData.repuestos}
                 onChange={handleChange}
-                disabled={!canEdit}
+                disabled={!canEdit || !mantenimiento.fechaInicio}
                 placeholder="Liste las piezas cambiadas si las hubo..."
               ></textarea>
             </div>
@@ -184,7 +142,7 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
                 className="form-control" 
                 value={formData.observacionesTecnico}
                 onChange={handleChange}
-                disabled={!canEdit}
+                disabled={!canEdit || !mantenimiento.fechaInicio}
               />
             </div>
             
@@ -198,13 +156,14 @@ function MaintenanceTracker({ mantenimiento, incidencia, onUpdate }) {
                 className="form-control" 
                 value={formData.tiempoEmpleado}
                 onChange={handleChange}
-                disabled={!canEdit}
+                disabled={!canEdit || !mantenimiento.fechaInicio}
                 placeholder="Ej: 2.5"
               />
             </div>
           </div>
 
-          {canEdit && (
+          {canEdit && !mantenimiento.fechaInicio && <button type="button" className="btn btn-primary mt-3" disabled={loading} onClick={handleStart}>Iniciar mantenimiento</button>}
+          {canEdit && mantenimiento.fechaInicio && (
             <div className="d-flex justify-content-end align-items-center mt-4 pt-3 border-top gap-2">
               <button type="submit" className="btn btn-outline-primary" disabled={loading}>
                 <i className="bi bi-save me-1"></i> Guardar Progreso

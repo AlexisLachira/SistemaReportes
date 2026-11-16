@@ -1,3 +1,4 @@
+import { sameId } from '../domain/maintenance';
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { getIncidents, getEquipos, getMantenimientos, getTecnicos, getHistorial } from '../services/api';
@@ -35,13 +36,13 @@ function Dashboard() {
           dataRole = incidenciasData.filter(i => i.reportante === user.nombre || i.reportante === user.codigo);
         } else if (user.rol === 'tecnico') {
           // Para el técnico en el dashboard, mostramos todas las suyas asignadas
-          const mantsDelTecnico = mantsData.filter(m => m.tecnicoId === user.id).map(m => m.incidenciaId);
-          dataRole = incidenciasData.filter(i => mantsDelTecnico.includes(i.id));
+          const mantsDelTecnico = mantsData.filter(m => sameId(m.tecnicoId, user.id)).map(m => m.incidenciaId);
+          dataRole = incidenciasData.filter(i => mantsDelTecnico.some(id => sameId(id, i.id)));
         }
         
         setIncidencias(dataRole);
         setEquipos(equiposData);
-        setMantenimientos(mantsData);
+        setMantenimientos(user.rol === 'administrador' ? mantsData : user.rol === 'tecnico' ? mantsData.filter(m => String(m.tecnicoId) === String(user.id)) : mantsData.filter(m => dataRole.some(i => String(i.id) === String(m.incidenciaId))));
         setTecnicos(tecsData);
         setHistorialGlobal(histData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)));
       } catch (error) {
@@ -54,8 +55,6 @@ function Dashboard() {
   }, [user]);
 
   // --- MÉTRICAS BÁSICAS ---
-  const reportadas = incidencias.filter(i => i.estado === 'Reportada').length;
-  const revisadas = incidencias.filter(i => i.estado === 'Revisada').length;
   const asignadas = incidencias.filter(i => i.estado === 'Asignada').length;
   const reparadas = incidencias.filter(i => i.estado === 'Reparada').length;
   const cerradas = incidencias.filter(i => i.estado === 'Cerrada').length;
@@ -66,12 +65,11 @@ function Dashboard() {
   const mantsEnProcesoGlobal = mantenimientos.filter(m => m.fechaInicio && !m.fechaFin).length;
 
   // Técnicos stats
-  const tecnicosTotal = tecnicos.length;
   const tecnicosActivos = tecnicos.filter(t => t.estado === 'Activo').length;
 
   // Técnico Dashboard stats (Mantenimientos)
-  const mantsPendientes = incidencias.filter(i => i.estado === 'Asignada').length;
-  const mantsFinalizados = incidencias.filter(i => i.estado === 'Reparada' || i.estado === 'Cerrada').length;
+  const mantsPendientes = mantenimientos.filter(m => !m.fechaFin).length;
+  const mantsFinalizados = mantenimientos.filter(m => m.fechaFin).length;
 
   // --- INDICADORES RÁPIDOS ---
   // Tiempo promedio
